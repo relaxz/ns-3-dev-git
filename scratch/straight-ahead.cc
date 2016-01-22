@@ -19,13 +19,13 @@
 #include "ns3/netanim-module.h"
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("Plus");
+NS_LOG_COMPONENT_DEFINE ("StraightAhead");
 
 int 
 main (int argc, char *argv[])
 {
   NodeContainer wifiStaNodes;
-  wifiStaNodes.Create (2);
+  wifiStaNodes.Create (1);
 
   ObjectFactory mobilityFactory;
   mobilityFactory.SetTypeId ("ns3::WaypointMobilityModel");
@@ -42,17 +42,7 @@ main (int argc, char *argv[])
   Ptr<Object> object = wifiStaNodes.Get(0);
   object->AggregateObject(model);
 
-  // second node
-  model = mobilityFactory.Create ()->GetObject<MobilityModel> ();
-  mob = model->GetObject<WaypointMobilityModel> ();
-  Waypoint wpt3 (Seconds (0.0), Vector (10.0, 5.0, 0.0));
-  Waypoint wpt4 (Seconds (5.0), Vector (0.0, 5.0, 0.0));
-  mob->AddWaypoint (wpt3);
-  mob->AddWaypoint (wpt4);
-  object = wifiStaNodes.Get(1);
-  object->AggregateObject(model);
-
-  AnimationInterface anim ("plus.xml");
+  AnimationInterface anim ("straight-ahead.xml");
 
   Simulator::Stop (Seconds (15.0));
 
