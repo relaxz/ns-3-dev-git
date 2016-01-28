@@ -20,6 +20,7 @@ def build(bld):
         'model/steady-state-random-waypoint-mobility-model.cc',
         'model/waypoint.cc',
         'model/waypoint-mobility-model.cc',
+        'model/mine-mobility-model.cc',
         'helper/mobility-helper.cc',
         'helper/ns2-mobility-helper.cc',
         ]
@@ -55,6 +56,7 @@ def build(bld):
         'model/steady-state-random-waypoint-mobility-model.h',
         'model/waypoint.h',
         'model/waypoint-mobility-model.h',
+        'model/mine-mobility-model.h',
         'helper/mobility-helper.h',
         'helper/ns2-mobility-helper.h',
         ]
