@@ -23,11 +23,26 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("Plus");
 std::string outputfile = "test.txt"; //name of file to write to
 
-void
-DistanceToEverything( Ptr<Object> object, NodeContainer wifiStaNodes)
+class RendezvousPoint
 {
+  //construct
+  public:
+    RendezvousPoint(Vector pos);
+    Vector pos = pos;
+    Vector paths;
+    Vector nodes;
 
-}
+  void setPath(Vector path, RendezvousPoint rp) {
+
+  }
+};
+
+
+
+
+
+
+
 
 /*
  * Logs and trace upon update in course ie when node reaches checkpoint
@@ -46,16 +61,17 @@ CourseChange (std::string context, Ptr<const MobilityModel> model)
   int index = str.find_first_of("/");
   str.erase(index, str.size());
 
+
   //logs data (console)
   NS_LOG_UNCOND ("NodeID = " << str << ", Time: " << time.GetSeconds() <<
     ", x = " << position.x << ", y = " << position.y << ", z = " << position.z <<
-	", Speed: " << speed);
+    ", Speed: " << speed);
 
   std::ofstream myfile;	//puts trace to file
   myfile.open (outputfile.c_str(), std::ios_base::app);
   myfile << "NodeID = " << str << ", Time: " << time.GetSeconds() <<
-		    ", x = " << position.x << ", y = " << position.y << ", z = " << position.z <<
-			", Speed: " << speed << "\n";
+      ", x = " << position.x << ", y = " << position.y << ", z = " << position.z <<
+      ", Speed: " << speed << "\n";
   myfile.close();
 
 }
@@ -95,16 +111,20 @@ main (int argc, char *argv[])
   object = wifiStaNodes.Get(1);
   object->AggregateObject(model);
 
+  for(int i=0; wifiStaNodes;i++) {
+
+  }
+
   AnimationInterface anim ("plus.xml");
 
   Simulator::Stop (Seconds (15.0));
 
   //for every node add coursechange as listener
   for(int i=0; i<NodeCount; i++) {
-	  std::ostringstream oss;
-  	  oss << "/NodeList/" << wifiStaNodes.Get (i)->GetId () << "/$ns3::MobilityModel/CourseChange";
+      std::ostringstream oss;
+      oss << "/NodeList/" << wifiStaNodes.Get (i)->GetId () << "/$ns3::MobilityModel/CourseChange";
+      Config::Connect (oss.str (), MakeCallback (&CourseChange));
 
-  	  Config::Connect (oss.str (), MakeCallback (&CourseChange));
   }
   Simulator::Run ();
   Simulator::Destroy ();
