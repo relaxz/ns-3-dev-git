@@ -21,17 +21,27 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("rendezvous-point");
 
+
 class RendezvousPoint
 {
   //construct
   public:
-    RendezvousPoint(Vector pos);
-    Vector pos = pos;
-    Vector connection; //between
-    Vector nodes;
-
-  void setPath(Vector path, RendezvousPoint rp) {
-
-  }
+    RendezvousPoint(std::vector pos);
+    std::vector pos = pos;
+    std::vector rendezvousPoints;
 };
+
+
+class Connection {
+  public:
+    Connection();
+    std::vector nodes;
+    std::vector waypoints;
+    RendezvousPoint target;
+
+};
+
+
+
+
 
