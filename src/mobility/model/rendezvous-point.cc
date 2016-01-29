@@ -17,29 +17,35 @@
 #include "ns3/core-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/netanim-module.h"
-using namespace ns3;
+#include "rendezvous-point.h"
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("rendezvous-point");
 
+std::vector<Vector> Connection::GetPoints(void) {
+  return waypoints;
+}
+RendezvousPoint Connection::GetTarget() {
+  return target;
+}
 
-class RendezvousPoint
-{
-  //construct
-  public:
-    RendezvousPoint(std::vector pos);
-    std::vector pos = pos;
-    std::vector rendezvousPoints;
-};
+Connection RendezvousPoint::GetConnection(RendezvousPoint rp) {
+  for(int i=0; i < connections.size();i++) {
+      if(connections[i].GetTarget() == rp) {
+	  return connections[i];
+      }
+  }
+  return NULL;
+}
 
 
-class Connection {
-  public:
-    Connection();
-    std::vector nodes;
-    std::vector waypoints;
-    RendezvousPoint target;
+std::vector<Vector> RendezvousPoint::GetConnectionPoints(RendezvousPoint rp) {
+  return GetConnection(rp).GetPoints();
 
-};
+}
+}
+
+
 
 
 
