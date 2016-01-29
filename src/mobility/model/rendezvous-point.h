@@ -8,12 +8,11 @@
 #ifndef SRC_MOBILITY_MODEL_RENDEZVOUS_POINT_H_
 #define SRC_MOBILITY_MODEL_RENDEZVOUS_POINT_H_
 
-#include "ns3/attribute.h"
-#include "ns3/attribute-helper.h"
-#include "ns3/nstime.h"
+#include "ns3/node.h"
 #include "ns3/vector.h"
 
 namespace ns3 {
+class RendezvousPoint;
 
 class Connection {
 public:
@@ -22,26 +21,27 @@ public:
   /*
    * Returns waypoints in connection
    */
-  std::vector<Vector> GetPoints(void);
+  const std::vector<Vector>& GetPoints(void);
 
   /*
    * returns the target RendezvousPoint of the connections
    */
-  RendezvousPoint GetTarget(void);
+  const RendezvousPoint& GetTarget(void);
+
 
 private:
-  std::vector nodes;
-  std::vector waypoints;
-  RendezvousPoint target;
+  std::vector<Node> nodes;
+  std::vector<double> waypoints;
+  const RendezvousPoint& target;
 };
 
 class RendezvousPoint
 {
 public:
-  RendezvousPoint(std::vector pos);
+  RendezvousPoint(std::vector<double> pos, std::vector<Connection> Connectionlist);
 
   /*
-   * Returns the connection to another RendezvousPoint
+   * Returns the connection to another RendezvousPoint rp
    */
   Connection GetConnection(RendezvousPoint rp);
 
@@ -50,9 +50,14 @@ public:
     */
   std::vector<Vector> GetConnectionPoints(RendezvousPoint rp);
 
+  /*
+   * Returns position of a RendezvousPoint
+   */
+  std::vector<double> GetPosition();
+
 private:
-  std::vector pos = pos;
-  std::vector<Connection> connections;
+  std::vector<double> m_pos;
+  std::vector<Connection> m_connections;
 
 };
 }

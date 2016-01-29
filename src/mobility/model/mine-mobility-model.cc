@@ -34,8 +34,8 @@ MineMobilityModel::GetTypeId (void)
 
 void MineMobilityModel::SetPath (const std::vector<RendezvousPoint> &path)
 {
-  m_path = path;
-  std::cout << "path=" << path << "\n" << "m_path=" << m_path;
+  //m_path = path;
+  //std::cout << "path=" << path << "\n" << "m_path=" << m_path;
 
 }
 

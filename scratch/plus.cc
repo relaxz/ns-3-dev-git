@@ -23,27 +23,6 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("Plus");
 std::string outputfile = "test.txt"; //name of file to write to
 
-class RendezvousPoint
-{
-  //construct
-  public:
-    RendezvousPoint(Vector pos);
-    Vector pos = pos;
-    Vector paths;
-    Vector nodes;
-
-  void setPath(Vector path, RendezvousPoint rp) {
-
-  }
-};
-
-
-
-
-
-
-
-
 /*
  * Logs and trace upon update in course ie when node reaches checkpoint
  * NodeID, Time, (x,y,z)-pos, Speed
@@ -111,9 +90,6 @@ main (int argc, char *argv[])
   object = wifiStaNodes.Get(1);
   object->AggregateObject(model);
 
-  for(int i=0; wifiStaNodes;i++) {
-
-  }
 
   AnimationInterface anim ("plus.xml");
 

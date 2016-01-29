@@ -8,6 +8,7 @@
 #include "waypoint-mobility-model.h"
 #include "ns3/vector.h"
 #include "ns3/uinteger.h"
+#include "rendezvous-point.h"
 
 namespace ns3 {
 /**

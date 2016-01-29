@@ -22,27 +22,31 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("rendezvous-point");
 
-std::vector<Vector> Connection::GetPoints(void) {
-  return waypoints;
-}
-RendezvousPoint Connection::GetTarget() {
-  return target;
-}
+//const std::vector<Vector>& Connection::GetPoints(void) {
+//  return waypoints;
+//}
 
-Connection RendezvousPoint::GetConnection(RendezvousPoint rp) {
-  for(int i=0; i < connections.size();i++) {
-      if(connections[i].GetTarget() == rp) {
-	  return connections[i];
-      }
-  }
-  return NULL;
-}
+//const RendezvousPoint& Connection::GetTarget() {
+//  return target;
+//}
 
+//RendezvousPoint::RendezvousPoint(std::vector<double> position, std::vector<Connection> connectionlist) {
+//  m_pos = position;
+//  m_connections = connectionlist;
+//}
 
-std::vector<Vector> RendezvousPoint::GetConnectionPoints(RendezvousPoint rp) {
-  return GetConnection(rp).GetPoints();
+//Connection RendezvousPoint::GetConnection(RendezvousPoint rp) {
+//  for(int i=0; i < m_connections.size();i++) {
+//      if(m_connections[i].GetTarget() == rp) {
+//	  return m_connections[i];
+//      }
+//  }
+//  return NULL;
+//}
 
-}
+//std::vector<Vector> RendezvousPoint::GetConnectionPoints(RendezvousPoint rp) {
+//  return GetConnection(rp).GetPoints();
+//}
 }
 
 
