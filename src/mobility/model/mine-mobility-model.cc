@@ -32,18 +32,21 @@ MineMobilityModel::GetTypeId (void)
   return tid;
 }
 
-void MineMobilityModel::SetPath (const std::vector<RendezvousPoint> &path)
+void MineMobilityModel::SetPath (std::vector<RendezvousPoint> &path)
 {
-  //m_path = path;
-  //std::cout << "path=" << path << "\n" << "m_path=" << m_path;
+  /*m_path = path;
+  std::vector<Vector> points = m_path[m_last_rendezvous_point].GetConnectionPoints(m_path[m_last_rendezvous_point + 1]);
+  for (uint32_t i = 0; i < points.size(); i++){
+      m_waypointMobility->AddWaypoint(CalculateWaypoint(points[i]));
+  }*/
 
 }
 
 MineMobilityModel::MineMobilityModel ()
-  : m_speed (10.0),
-    m_priority (0)
+  : m_speed (10.0)
 {
-  std::cout << "MineMobilityModel constructor\n";
+  m_priority = 0;
+  m_last_rendezvous_point = 0;
   ObjectFactory mobilityFactory;
   mobilityFactory.SetTypeId ("ns3::WaypointMobilityModel");
   m_waypointMobility = mobilityFactory.Create ()->GetObject<WaypointMobilityModel>();
@@ -71,6 +74,35 @@ Vector
 MineMobilityModel::DoGetVelocity (void) const
 {
   return m_waypointMobility->GetVelocity ();
+}
+
+Waypoint
+MineMobilityModel::CalculateWaypoint (Vector destination)
+{
+  Time arrival_time = TravelTime (m_last_waypoint.position, destination) + m_last_waypoint.time;
+  return Waypoint (arrival_time, destination);
+}
+
+Time
+MineMobilityModel::TravelTime(Vector v1, Vector v2)
+{
+  return Seconds(Distance(v1, v2) / m_speed);
+}
+
+double
+MineMobilityModel::Distance(Vector v1, Vector v2)
+{
+  double dx = v1.x-v2.x;
+  double dy = v1.y-v2.y;
+  double dz = v1.z-v2.z;
+  return sqrt(dx*dx + dy*dy + dz*dz);
+}
+
+void
+MineMobilityModel::AddWaypoint(const Waypoint& wpt)
+{
+  m_last_waypoint = wpt;
+  m_waypointMobility->AddWaypoint(wpt);
 }
 
 } // namespace ns3

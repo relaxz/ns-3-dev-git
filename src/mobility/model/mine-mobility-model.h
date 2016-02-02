@@ -34,9 +34,10 @@ public:
   /**
    * \param path The path the object will follow
    *
-   * Set the path the object will follow and move the object to the start of the path
+   * Set the path the object will follow and move the object to the start of
+   * the path
    */
-  void SetPath (const std::vector<RendezvousPoint> &path);
+  void SetPath (std::vector<RendezvousPoint> &path);
   MineMobilityModel ();
   virtual ~MineMobilityModel ();
 private:
@@ -56,11 +57,36 @@ private:
    * \return The velocity vector of a node.
    */
   virtual Vector DoGetVelocity (void) const;
-  /**
-   * \brief The double ended queue containing ns3::Vector objects that describe that path that will be followed
+
+  /*
+   * \brief Returns the Waypoint with a correct time so that the object will
+   * travel at the set m_speed
+   * \param destination The position vector of the new waypoint
    */
-  mutable std::vector<Vector> m_path;
-  mutable double m_speed;
+  Waypoint CalculateWaypoint (Vector destination);
+
+  /*
+   * Returns the time to travel between two points
+   */
+  Time TravelTime(Vector v1, Vector v2);
+
+  /*
+   * Returns the distance between two Vectors in meters
+   */
+  double Distance(Vector v1, Vector v2);
+
+  /*
+   * Adds a waypoint to the underlying WaypointMobilityModel
+   */
+  void AddWaypoint(const Waypoint& wpt);
+  /**
+   * \brief std::vector containing ns3::Vector objects that describe that
+   * path that will be followed
+   */
+  std::vector<RendezvousPoint> m_path;
+  uint32_t m_last_rendezvous_point;
+  Waypoint m_last_waypoint;
+  double m_speed;
   Ptr<WaypointMobilityModel> m_waypointMobility;
   uint32_t m_priority;
 };
