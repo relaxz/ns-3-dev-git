@@ -18,6 +18,8 @@
 #include "ns3/mobility-module.h"
 #include "ns3/netanim-module.h"
 #include <iostream>
+#include "ns3/rendezvous-point.h"
+#include "ns3/vector.h"
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Plus");
@@ -89,6 +91,11 @@ main (int argc, char *argv[])
   mob->AddWaypoint(wpt5);
   object = wifiStaNodes.Get(1);
   object->AggregateObject(model);
+
+  //RendezvousPoint rp1 (Vector(0.0, 0.0, 0.0));
+  //RendezvousPoint rp2 (Vector(0.0, 10.0, 0.0));
+  //7std::vector vect {wpt4, wpt5};
+  //rp1.Connect(rp2, vect);
 
 
   AnimationInterface anim ("plus.xml");
