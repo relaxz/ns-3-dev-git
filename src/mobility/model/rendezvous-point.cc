@@ -15,39 +15,86 @@
  */
 
 #include "ns3/core-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/netanim-module.h"
+#include "ns3/double.h"
+#include "ns3/integer.h"
 #include "rendezvous-point.h"
+#include <algorithm>
+#include <vector>
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("rendezvous-point");
 
-//const std::vector<Vector>& Connection::GetPoints(void) {
-//  return waypoints;
-//}
+Connection::Connection(RendezvousPoint* target, std::vector<Vector> waypoints){
+  m_target = target;
+  m_waypoints = waypoints;
+}
 
-//const RendezvousPoint& Connection::GetTarget() {
-//  return target;
-//}
+std::vector<Vector> Connection::GetPoints(void){
+  return m_waypoints;
+}
 
-//RendezvousPoint::RendezvousPoint(std::vector<double> position, std::vector<Connection> connectionlist) {
-//  m_pos = position;
-//  m_connections = connectionlist;
-//}
+RendezvousPoint* Connection::GetTarget(void) {
+  return m_target;
+}
+std::vector<Node*> Connection::GetNodes(void) {
+  return m_nodes;
+}
 
-//Connection RendezvousPoint::GetConnection(RendezvousPoint rp) {
-//  for(int i=0; i < m_connections.size();i++) {
-//      if(m_connections[i].GetTarget() == rp) {
+void Connection::AddNode(Node* node) {
+  m_nodes.push_back(node);
+}
+
+void Connection::RemoveNode(Node* node) {
+    for(unsigned int i=0; i<m_nodes.size(); i++) {
+	if(m_nodes[i] == node) {
+	    m_nodes.erase(m_nodes.begin() + i);
+	}
+    }
+}
+
+
+/*
+ *=================================================================================================
+ */
+
+RendezvousPoint::RendezvousPoint(std::vector<double> position) {
+  m_pos = position;
+}
+
+void RendezvousPoint::Connect(RendezvousPoint* rp, std::vector<Vector> waypoints) {
+  Connection conn (rp, waypoints);
+  m_connections.push_back(&conn);
+  rp->Connect(this, ReverseVector(waypoints));
+}
+
+//Connection RendezvousPoint::GetConnection(RendezvousPoint* rp) { //detta behöver lösas
+//  for(unsigned int i=0; i < m_connections.size();i++) {
+//      if(m_connections[i]->GetTarget() == rp) {
 //	  return m_connections[i];
-//      }
+//     }
 //  }
 //  return NULL;
 //}
 
-//std::vector<Vector> RendezvousPoint::GetConnectionPoints(RendezvousPoint rp) {
+//std::vector<Vector> RendezvousPoint::GetConnectionPoints(RendezvousPoint* rp) {
 //  return GetConnection(rp).GetPoints();
 //}
+
+std::vector<double> RendezvousPoint::GetPosition(void) {
+  return m_pos;
 }
+
+std::vector<Vector> RendezvousPoint::ReverseVector(std::vector<Vector> vect) {
+  std::vector<Vector> rev;
+  unsigned int l = 0;
+  for(unsigned int i=vect.size(); i >= 0; i--) {
+      rev[l] = vect[i];
+      l++;
+  }
+  return rev;
+}
+
+} //ns3
 
 
 
