@@ -57,7 +57,7 @@ void Connection::RemoveNode(Node* node) {
  *=================================================================================================
  */
 
-RendezvousPoint::RendezvousPoint(std::vector<double> position) {
+RendezvousPoint::RendezvousPoint(Vector position) {
   m_pos = position;
 }
 
@@ -80,7 +80,7 @@ void RendezvousPoint::Connect(RendezvousPoint* rp, std::vector<Vector> waypoints
 //  return GetConnection(rp).GetPoints();
 //}
 
-std::vector<double> RendezvousPoint::GetPosition(void) {
+Vector RendezvousPoint::GetPosition(void) {
   return m_pos;
 }
 

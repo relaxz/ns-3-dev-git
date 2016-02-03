@@ -63,7 +63,7 @@ public:
    * Defines a Rendezvous point. A location where two nodes can meet to avoid collision.
    * Holds its position and all connections from it.
    */
-  RendezvousPoint(std::vector<double> pos);
+  RendezvousPoint(Vector pos);
 
   /*
    * Adds a connection, with given waypoints, from this to another RendezvousPoint rp, and the other way around
@@ -83,7 +83,7 @@ public:
   /*
    * Returns position of this RendezvousPoint
    */
-  std::vector<double> GetPosition(void);
+  Vector GetPosition(void);
 
   /*
    * Reverses the given vector and returns it.
@@ -91,7 +91,7 @@ public:
   std::vector<Vector> ReverseVector(std::vector<Vector>);
 
 private:
-  std::vector<double> m_pos;
+  Vector m_pos;
   std::vector<Connection*> m_connections;
 
 };
