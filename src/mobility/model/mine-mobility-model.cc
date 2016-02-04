@@ -7,6 +7,7 @@
 #include "ns3/object-factory.h"
 #include "mine-mobility-model.h"
 
+
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("MineMobilityModel");
 
@@ -34,13 +35,22 @@ MineMobilityModel::GetTypeId (void)
 
 void MineMobilityModel::SetPath (std::vector<RendezvousPoint> &path)
 {
-  /*m_path = path;
+  m_first = true;
+  m_last_rendezvous_point = 0;
+  m_path = path;
+  Rendezvous();
+}
+
+void
+MineMobilityModel::Rendezvous(){/* commented out until rp method GetConnectionPoints exists
+  //todo logic for deciding if we should stop and wait
   std::vector<Vector> points = m_path[m_last_rendezvous_point].GetConnectionPoints(m_path[m_last_rendezvous_point + 1]);
   for (uint32_t i = 0; i < points.size(); i++){
-      m_waypointMobility->AddWaypoint(CalculateWaypoint(points[i]));
-  }*/
-
-}
+      AddWaypoint(CalculateWaypoint(points[i]));
+  }
+  Simulator::Schedule(m_last_waypoint.time, &MineMobilityModel::Rendezvous, this);
+  //todo m_last_rendezvous_point++ somewhere
+*/}
 
 MineMobilityModel::MineMobilityModel ()
   : m_speed (10.0)
@@ -50,6 +60,10 @@ MineMobilityModel::MineMobilityModel ()
   ObjectFactory mobilityFactory;
   mobilityFactory.SetTypeId ("ns3::WaypointMobilityModel");
   m_waypointMobility = mobilityFactory.Create ()->GetObject<WaypointMobilityModel>();
+  Ptr<MobilityModel> mob = m_waypointMobility->GetObject<MobilityModel> ();
+  //m_waypointMobility = CreateObjectWithAttributes<WaypointMobilityModel> ();
+  // make couse changes in the waypoint mobility model triggers a course change in this model.
+  mob->TraceConnectWithoutContext ("CourseChange", MakeCallback (&MineMobilityModel::CourseChange, this));
 }
 MineMobilityModel::~MineMobilityModel ()
 {
@@ -79,23 +93,20 @@ MineMobilityModel::DoGetVelocity (void) const
 Waypoint
 MineMobilityModel::CalculateWaypoint (Vector destination)
 {
-  Time arrival_time = TravelTime (m_last_waypoint.position, destination) + m_last_waypoint.time;
+  Time arrival_time;
+  if (m_first){
+      arrival_time = Seconds(0);
+  }
+  else {
+      arrival_time = TravelTime (m_last_waypoint.position, destination) + m_last_waypoint.time;
+  }
   return Waypoint (arrival_time, destination);
 }
 
 Time
 MineMobilityModel::TravelTime(Vector v1, Vector v2)
 {
-  return Seconds(Distance(v1, v2) / m_speed);
-}
-
-double
-MineMobilityModel::Distance(Vector v1, Vector v2)
-{
-  double dx = v1.x-v2.x;
-  double dy = v1.y-v2.y;
-  double dz = v1.z-v2.z;
-  return sqrt(dx*dx + dy*dy + dz*dz);
+  return Seconds(CalculateDistance(v1, v2) / m_speed);
 }
 
 void
@@ -103,6 +114,12 @@ MineMobilityModel::AddWaypoint(const Waypoint& wpt)
 {
   m_last_waypoint = wpt;
   m_waypointMobility->AddWaypoint(wpt);
+}
+
+void
+MineMobilityModel::CourseChange(Ptr<const MobilityModel> model)
+{
+  MobilityModel::NotifyCourseChange ();
 }
 
 } // namespace ns3
