@@ -89,7 +89,11 @@ public:
    * Reverses the given vector and returns it.
    */
   std::vector<Vector> ReverseVector(std::vector<Vector>);
-
+  /*
+   * Two RendezvousPoints are considered equal if their positions
+   * are the same
+   */
+  bool operator== (RendezvousPoint & o);
 private:
   Vector m_pos;
   std::vector<Connection*> m_connections;

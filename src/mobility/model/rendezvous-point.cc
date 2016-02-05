@@ -45,11 +45,11 @@ void Connection::AddNode(Node* node) {
 }
 
 void Connection::RemoveNode(Node* node) {
-    for(unsigned int i=0; i<m_nodes.size(); i++) {
-	if(m_nodes[i] == node) {
-	    m_nodes.erase(m_nodes.begin() + i);
-	}
-    }
+  for(unsigned int i=0; i<m_nodes.size(); i++) {
+      if(m_nodes[i] == node) {
+	  m_nodes.erase(m_nodes.begin() + i);
+      }
+  }
 }
 
 
@@ -61,29 +61,32 @@ RendezvousPoint::RendezvousPoint(Vector position) {
   m_pos = position;
 }
 void RendezvousPoint::ConnectOneWay(RendezvousPoint* rp, std::vector<Vector> waypoints) {
-	 Connection conn (rp, waypoints);
-	  m_connections.push_back(&conn);
+  Connection conn (rp, waypoints);
+  m_connections.push_back(&conn);
 }
 
 void RendezvousPoint::Connect(RendezvousPoint* rp, std::vector<Vector> waypoints) {
-	ConnectOneWay(rp,waypoints);
-	//rp->ConnectOneWay(this, ReverseVector(waypoints));
-	ReverseVector(waypoints);
+  ConnectOneWay(rp,waypoints);
+  rp->ConnectOneWay(this, ReverseVector(waypoints));
 }
 
-//detta behöver lösas
 Connection RendezvousPoint::GetConnection(RendezvousPoint* rp) {
-  for(unsigned int i=0; i < m_connections.size();i++) {
-      if(m_connections[i]->GetTarget() == rp) {
-	  return m_connections[i];
-     }
+  for(uint32_t i=0; i < m_connections.size();i++) {
+      if(*(m_connections[i]->GetTarget()) == *rp) {
+	  return *m_connections[i];
+      }
   }
-  return NULL;
+  Vector rpp = rp->GetPosition();
+  Vector c0p = m_connections[0]->GetTarget()->GetPosition();
+  NS_LOG_UNCOND("requested rp: (" << rpp.x << "," << rpp.y << "," << rpp.z << ")"
+              "\nfound rp:     (" << c0p.x << "," << c0p.y << "," << c0p.z << ")\n");
+  NS_FATAL_ERROR("Connection not found.");
+  //return NULL;
 }
 
-//std::vector<Vector> RendezvousPoint::GetConnectionPoints(RendezvousPoint* rp) {
-//  return GetConnection(rp).GetPoints();
-//}
+std::vector<Vector> RendezvousPoint::GetConnectionPoints(RendezvousPoint* rp) {
+  return GetConnection(rp).GetPoints();
+}
 
 Vector RendezvousPoint::GetPosition(void) {
   return m_pos;
@@ -91,16 +94,17 @@ Vector RendezvousPoint::GetPosition(void) {
 
 std::vector<Vector> RendezvousPoint::ReverseVector(std::vector<Vector> vect) {
   std::vector<Vector> rev;
-  /*unsigned int l = 0;
-  for(unsigned int i=vect.size()-1; i >= 0; i--) {
-      rev[l] = vect[i]; //indexerar utanför ????
-      l++;
-  }*/
   uint32_t l = vect.size();
   for(uint32_t i=0; i < l; i++){
 	  rev.push_back(vect[l - 1 - i]);
   }
   return rev;
+}
+
+bool
+RendezvousPoint::operator== (RendezvousPoint & o){
+  Vector o_pos = o.GetPosition();
+  return m_pos.x == o_pos.x && m_pos.y == o_pos.y && m_pos.z == o_pos.z;
 }
 
 } //ns3
