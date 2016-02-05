@@ -37,7 +37,7 @@ public:
    * Set the path the object will follow and move the object to the start of
    * the path
    */
-  void SetPath (std::vector<RendezvousPoint> &path);
+  void SetPath (std::vector<RendezvousPoint*> &path);
   /**
    * Called when the object reaches a rendezvous point
    */
@@ -87,8 +87,8 @@ private:
    * \brief std::vector containing ns3::Vector objects that describe that
    * path that will be followed
    */
-  std::vector<RendezvousPoint> m_path;
-  uint32_t m_last_rendezvous_point;
+  std::vector<RendezvousPoint*> m_path;
+  uint32_t m_next_rendezvous_point;
   Waypoint m_last_waypoint;
   double m_speed;
   Ptr<WaypointMobilityModel> m_waypointMobility;
