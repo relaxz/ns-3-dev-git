@@ -93,7 +93,7 @@ public:
 private:
   Vector m_pos;
   std::vector<Connection*> m_connections;
-
+  void ConnectOneWay(RendezvousPoint* rp, std::vector<Vector> waypoints);
 };
 }
 

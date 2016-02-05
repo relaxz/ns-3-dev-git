@@ -60,21 +60,26 @@ void Connection::RemoveNode(Node* node) {
 RendezvousPoint::RendezvousPoint(Vector position) {
   m_pos = position;
 }
-
-void RendezvousPoint::Connect(RendezvousPoint* rp, std::vector<Vector> waypoints) {
-  Connection conn (rp, waypoints);
-  m_connections.push_back(&conn);
-  rp->Connect(this, ReverseVector(waypoints));
+void RendezvousPoint::ConnectOneWay(RendezvousPoint* rp, std::vector<Vector> waypoints) {
+	 Connection conn (rp, waypoints);
+	  m_connections.push_back(&conn);
 }
 
-//Connection RendezvousPoint::GetConnection(RendezvousPoint* rp) { //detta behöver lösas
-//  for(unsigned int i=0; i < m_connections.size();i++) {
-//      if(m_connections[i]->GetTarget() == rp) {
-//	  return m_connections[i];
-//     }
-//  }
-//  return NULL;
-//}
+void RendezvousPoint::Connect(RendezvousPoint* rp, std::vector<Vector> waypoints) {
+	ConnectOneWay(rp,waypoints);
+	//rp->ConnectOneWay(this, ReverseVector(waypoints));
+	ReverseVector(waypoints);
+}
+
+//detta behöver lösas
+Connection RendezvousPoint::GetConnection(RendezvousPoint* rp) {
+  for(unsigned int i=0; i < m_connections.size();i++) {
+      if(m_connections[i]->GetTarget() == rp) {
+	  return m_connections[i];
+     }
+  }
+  return NULL;
+}
 
 //std::vector<Vector> RendezvousPoint::GetConnectionPoints(RendezvousPoint* rp) {
 //  return GetConnection(rp).GetPoints();
@@ -86,10 +91,14 @@ Vector RendezvousPoint::GetPosition(void) {
 
 std::vector<Vector> RendezvousPoint::ReverseVector(std::vector<Vector> vect) {
   std::vector<Vector> rev;
-  unsigned int l = 0;
-  for(unsigned int i=vect.size(); i >= 0; i--) {
-      rev[l] = vect[i];
+  /*unsigned int l = 0;
+  for(unsigned int i=vect.size()-1; i >= 0; i--) {
+      rev[l] = vect[i]; //indexerar utanför ????
       l++;
+  }*/
+  uint32_t l = vect.size();
+  for(uint32_t i=0; i < l; i++){
+	  rev.push_back(vect[l - 1 - i]);
   }
   return rev;
 }
