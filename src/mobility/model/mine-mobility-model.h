@@ -38,6 +38,10 @@ public:
    * the path
    */
   void SetPath (std::vector<RendezvousPoint> &path);
+  /**
+   * Called when the object reaches a rendezvous point
+   */
+  void Rendezvous();
   MineMobilityModel ();
   virtual ~MineMobilityModel ();
 private:
@@ -71,14 +75,14 @@ private:
   Time TravelTime(Vector v1, Vector v2);
 
   /*
-   * Returns the distance between two Vectors in meters
-   */
-  double Distance(Vector v1, Vector v2);
-
-  /*
    * Adds a waypoint to the underlying WaypointMobilityModel
    */
   void AddWaypoint(const Waypoint& wpt);
+  /**
+   * Callback for when the WaypointMobilityModel has a course change
+   */
+  void CourseChange(Ptr<const MobilityModel> model);
+
   /**
    * \brief std::vector containing ns3::Vector objects that describe that
    * path that will be followed
@@ -89,6 +93,10 @@ private:
   double m_speed;
   Ptr<WaypointMobilityModel> m_waypointMobility;
   uint32_t m_priority;
+  /*
+   * \brief True if no waypoints have been added yet
+   */
+  bool m_first;
 };
 } // namespace ns3
 
