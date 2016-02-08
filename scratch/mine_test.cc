@@ -33,17 +33,17 @@ main (int argc, char *argv[])
   RendezvousPoint pointC(Vector(500.0,0.0,0.0));
 
   std::vector<Vector> a_to_b;
-  a_to_b.push_back(Vector(100,450,0));
-  a_to_b.push_back(Vector(200,550,0));
-  a_to_b.push_back(Vector(300,450,0));
-  a_to_b.push_back(Vector(400,550,0));
+  a_to_b.push_back(Vector(100,490,0));
+  a_to_b.push_back(Vector(200,510,0));
+  a_to_b.push_back(Vector(300,490,0));
+  a_to_b.push_back(Vector(400,510,0));
   pointA.Connect(&pointB, a_to_b);
 
   std::vector<Vector> b_to_c;
-  b_to_c.push_back(Vector(450,400,0));
-  b_to_c.push_back(Vector(550,300,0));
-  b_to_c.push_back(Vector(450,200,0));
-  b_to_c.push_back(Vector(550,100,0));
+  b_to_c.push_back(Vector(490,400,0));
+  b_to_c.push_back(Vector(510,300,0));
+  b_to_c.push_back(Vector(490,200,0));
+  b_to_c.push_back(Vector(510,100,0));
   pointB.Connect(&pointC, b_to_c);
 
   std::vector<RendezvousPoint*> pathABC;
@@ -58,11 +58,11 @@ main (int argc, char *argv[])
 
   NodeContainer mobileWifiNodes;
   mobileWifiNodes.Create (1);
-  Ptr<MineMobilityModel> minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(100), "Priority", IntegerValue(0));
+  Ptr<MineMobilityModel> minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(10), "Priority", IntegerValue(0));
   minemob->SetPath(pathABC);
   Ptr<MobilityModel> model = minemob->GetObject<MobilityModel>();
   Ptr<Object> object = mobileWifiNodes.Get(0);
-  object->AggregateObject(model);
+  object->AggregateObject(minemob);
 
   AnimationInterface anim ("mine_test.xml");
 
