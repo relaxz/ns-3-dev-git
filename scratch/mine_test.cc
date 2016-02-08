@@ -16,6 +16,8 @@
 
 #include "ns3/core-module.h"
 #include "ns3/vector.h"
+
+#include "ns3/netanim-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/string.h"
 using namespace ns3;
@@ -61,6 +63,8 @@ main (int argc, char *argv[])
   Ptr<MobilityModel> model = minemob->GetObject<MobilityModel>();
   Ptr<Object> object = mobileWifiNodes.Get(0);
   object->AggregateObject(model);
+
+  AnimationInterface anim ("mine_test.xml");
 
   Simulator::Run ();
   Simulator::Destroy ();

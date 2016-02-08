@@ -96,7 +96,7 @@ public:
   bool operator== (RendezvousPoint & o);
 private:
   Vector m_pos;
-  std::vector<Connection*> m_connections;
+  std::vector<Connection> m_connections;
   void ConnectOneWay(RendezvousPoint* rp, std::vector<Vector> waypoints);
 };
 }

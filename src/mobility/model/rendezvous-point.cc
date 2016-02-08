@@ -62,7 +62,7 @@ RendezvousPoint::RendezvousPoint(Vector position) {
 }
 void RendezvousPoint::ConnectOneWay(RendezvousPoint* rp, std::vector<Vector> waypoints) {
   Connection conn (rp, waypoints);
-  m_connections.push_back(&conn);
+  m_connections.push_back(conn);
 }
 
 void RendezvousPoint::Connect(RendezvousPoint* rp, std::vector<Vector> waypoints) {
@@ -72,12 +72,12 @@ void RendezvousPoint::Connect(RendezvousPoint* rp, std::vector<Vector> waypoints
 
 Connection RendezvousPoint::GetConnection(RendezvousPoint* rp) {
   for(uint32_t i=0; i < m_connections.size();i++) {
-      if(*(m_connections[i]->GetTarget()) == *rp) {
-	  return *m_connections[i];
+      if(m_connections[i].GetTarget() == rp) {
+	  return m_connections[i];
       }
   }
   Vector rpp = rp->GetPosition();
-  Vector c0p = m_connections[0]->GetTarget()->GetPosition();
+  Vector c0p = m_connections[0].GetTarget()->GetPosition();
   NS_LOG_UNCOND("requested rp: (" << rpp.x << "," << rpp.y << "," << rpp.z << ")"
               "\nfound rp:     (" << c0p.x << "," << c0p.y << "," << c0p.z << ")\n");
   NS_FATAL_ERROR("Connection not found.");
