@@ -51,20 +51,30 @@ main (int argc, char *argv[])
   pathABC.push_back(&pointB);
   pathABC.push_back(&pointC);
 
-  std::vector<RendezvousPoint*> pathCBA;
-  pathCBA.push_back(&pointC);
-  pathCBA.push_back(&pointB);
-  pathCBA.push_back(&pointA);
+  //std::vector<RendezvousPoint*> pathCBA;
+  //pathCBA.push_back(&pointC);
+  //pathCBA.push_back(&pointB);
+  //pathCBA.push_back(&pointA);
 
+  //node 0
   NodeContainer mobileWifiNodes;
-  mobileWifiNodes.Create (1);
+  mobileWifiNodes.Create (1); //nr of nodes
   Ptr<MineMobilityModel> minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(10), "Priority", IntegerValue(0));
-  minemob->SetPath(pathABC);
+  minemob->SetPath(pathABC); //set path
   Ptr<MobilityModel> model = minemob->GetObject<MobilityModel>();
   Ptr<Object> object = mobileWifiNodes.Get(0);
   object->AggregateObject(minemob);
 
-  AnimationInterface anim ("mine_test.xml");
+  //node 1
+  //minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(5), "Priority", IntegerValue(1));
+  //minemob->SetPath(pathCBA);
+  //model = minemob->GetObject<MobilityModel>();
+  //object = mobileWifiNodes.Get(1);
+  //object->AggregateObject(minemob);
+
+
+
+  AnimationInterface anim ("mine_test.xml"); //change this!
 
   Simulator::Run ();
   Simulator::Destroy ();
