@@ -55,7 +55,8 @@ MineMobilityModel::Rendezvous(){
     {
       NS_LOG_UNCOND("Stop and wait, path to next rp is in use");
       // Try again later
-      Simulator::Schedule(m_path[m_next_rendezvous_point]->GetClearTime(m_path[m_next_rendezvous_point]),
+      Time timeleft = time2timeleft(m_path[m_next_rendezvous_point]->GetClearTime(m_path[m_next_rendezvous_point]));
+      Simulator::Schedule(timeleft,
 			  &MineMobilityModel::Rendezvous,
 			  this);
   }
@@ -150,8 +151,14 @@ MineMobilityModel::MoveNextRP(){
 	  AddWaypoint(CalculateWaypoint(points[i]));
       }
       AddWaypoint(CalculateWaypoint(m_path[m_next_rendezvous_point]->GetPosition()));
-      Simulator::Schedule(m_last_waypoint.time, &MineMobilityModel::Rendezvous, this);
+      Time timeleft = time2timeleft(m_last_waypoint.time);
+      Simulator::Schedule(timeleft, &MineMobilityModel::Rendezvous, this);
   }
+}
+
+Time
+MineMobilityModel::time2timeleft(Time t){
+  return t - Simulator::Now();
 }
 
 } // namespace ns3
