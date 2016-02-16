@@ -36,20 +36,31 @@ std::vector<Vector> Connection::GetPoints(void){
 RendezvousPoint* Connection::GetTarget(void) {
   return m_target;
 }
-std::vector<Node*> Connection::GetNodes(void) {
-  return m_nodes;
-}
 
-void Connection::AddNode(Node* node) {
-  m_nodes.push_back(node);
-}
-
+/* keeping this for reference until RemoveMobile is tested
 void Connection::RemoveNode(Node* node) {
   for(unsigned int i=0; i<m_nodes.size(); i++) {
       if(m_nodes[i] == node) {
 	  m_nodes.erase(m_nodes.begin() + i);
       }
   }
+}
+*/
+
+std::vector<MineMobilityModel*>
+Connection::GetMobiles(){
+  return m_mobiles;
+}
+
+void
+Connection::AddMobile(MineMobilityModel* mob, Time arrival_time){
+  m_mobiles.push_back(mob);
+  Simulator::Schedule(arrival_time, &Connection::RemoveMobile, this, mob);
+}
+
+void
+Connection::RemoveMobile(MineMobilityModel* mob){
+  m_mobiles.erase(std::remove(m_mobiles.begin(), m_mobiles.end(), mob), m_mobiles.end());
 }
 
 
@@ -60,17 +71,20 @@ void Connection::RemoveNode(Node* node) {
 RendezvousPoint::RendezvousPoint(Vector position) {
   m_pos = position;
 }
-void RendezvousPoint::ConnectOneWay(RendezvousPoint* rp, std::vector<Vector> waypoints) {
+void
+RendezvousPoint::ConnectOneWay(RendezvousPoint* rp, std::vector<Vector> waypoints) {
   Connection conn (rp, waypoints);
   m_connections.push_back(conn);
 }
 
-void RendezvousPoint::Connect(RendezvousPoint* rp, std::vector<Vector> waypoints) {
+void
+RendezvousPoint::Connect(RendezvousPoint* rp, std::vector<Vector> waypoints) {
   ConnectOneWay(rp,waypoints);
   rp->ConnectOneWay(this, ReverseVector(waypoints));
 }
 
-Connection RendezvousPoint::GetConnection(RendezvousPoint* rp) {
+Connection
+RendezvousPoint::GetConnectionTo(RendezvousPoint* rp) {
   for(uint32_t i=0; i < m_connections.size();i++) {
       if(m_connections[i].GetTarget() == rp) {
 	  return m_connections[i];
@@ -84,8 +98,44 @@ Connection RendezvousPoint::GetConnection(RendezvousPoint* rp) {
   //return NULL;
 }
 
-std::vector<Vector> RendezvousPoint::GetConnectionPoints(RendezvousPoint* rp) {
-  return GetConnection(rp).GetPoints();
+Connection
+RendezvousPoint::GetConnectionFrom(RendezvousPoint* rp){
+  return rp->GetConnectionTo(this);
+}
+
+std::vector<Vector>
+RendezvousPoint::GetConnectionPoints(RendezvousPoint* rp) {
+  return GetConnectionTo(rp).GetPoints();
+}
+
+
+std::vector<MineMobilityModel*>
+RendezvousPoint::GetApproachingMobilesFrom(RendezvousPoint* rp){
+  return GetConnectionFrom(rp).GetMobiles();
+}
+
+std::vector<MineMobilityModel*>
+RendezvousPoint::GetAllApproachingMobiles(){
+  std::vector<MineMobilityModel*> all_mobs;
+  for(uint32_t i; i<m_connections.size(); i++){
+      std::vector<MineMobilityModel*> mobs = m_connections[i].GetMobiles();
+      for(uint32_t j; j<mobs.size(); j++){
+	  all_mobs.push_back(mobs[j]);
+      }
+  }
+  return all_mobs;
+}
+
+bool
+RendezvousPoint::IsConnectionBusy(RendezvousPoint* rp){
+  //todo everything
+ return false;
+}
+
+Time
+RendezvousPoint::GetClearTime(RendezvousPoint* rp){
+  //todo give an accurate response
+ return Seconds(1);
 }
 
 Vector RendezvousPoint::GetPosition(void) {

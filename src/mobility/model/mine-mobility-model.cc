@@ -50,23 +50,20 @@ MineMobilityModel::Rendezvous(){
   NS_LOG_UNCOND("Reached rendezvous point " << m_next_rendezvous_point);
   Vector pos = GetPosition();
   NS_LOG_UNCOND("position: (" << pos.x << ", " << pos.y << ", " << pos.z << ")");
-  //todo logic for deciding if we should stop and wait
-  m_next_rendezvous_point++;
-  //if we are out of places to go, just stop
-  if (m_next_rendezvous_point >= m_path.size()){
-      m_waypointMobility->EndMobility();
-      NS_LOG_UNCOND("Reached destination.");
+  // Decide if we need to wait at this rp
+  if (m_path[m_next_rendezvous_point]->IsConnectionBusy(m_path[m_next_rendezvous_point]))
+    {
+      NS_LOG_UNCOND("Stop and wait, path to next rp is in use");
+      // Try again later
+      Simulator::Schedule(m_path[m_next_rendezvous_point]->GetClearTime(m_path[m_next_rendezvous_point]),
+			  &MineMobilityModel::Rendezvous,
+			  this);
   }
+  //todo look ahead beyond the next rp
   else{
-      // The current position must be added as a waypoint again to prevent
-      // teleportation to the first waypoint on the path
-      AddWaypoint(Waypoint(Simulator::Now(), GetPosition()));
-      std::vector<Vector> points = m_path[m_next_rendezvous_point - 1]->GetConnectionPoints(m_path[m_next_rendezvous_point]);
-      for (uint32_t i = 0; i < points.size(); i++){
-	  AddWaypoint(CalculateWaypoint(points[i]));
-      }
-      AddWaypoint(CalculateWaypoint(m_path[m_next_rendezvous_point]->GetPosition()));
-      Simulator::Schedule(m_last_waypoint.time, &MineMobilityModel::Rendezvous, this);
+
+      // Continue along the path
+      MoveNextRP();
   }
 }
 
@@ -134,6 +131,27 @@ void
 MineMobilityModel::CourseChange(Ptr<const MobilityModel> model)
 {
   MobilityModel::NotifyCourseChange ();
+}
+
+void
+MineMobilityModel::MoveNextRP(){
+  m_next_rendezvous_point++;
+  // If we are out of places to go, just stop
+  if (m_next_rendezvous_point >= m_path.size()){
+      m_waypointMobility->EndMobility();
+      NS_LOG_UNCOND("Reached destination.");
+  }
+  else{
+      // The current position must be added as a waypoint again to prevent
+      // teleportation to the first waypoint on the path
+      AddWaypoint(Waypoint(Simulator::Now(), GetPosition()));
+      std::vector<Vector> points = m_path[m_next_rendezvous_point - 1]->GetConnectionPoints(m_path[m_next_rendezvous_point]);
+      for (uint32_t i = 0; i < points.size(); i++){
+	  AddWaypoint(CalculateWaypoint(points[i]));
+      }
+      AddWaypoint(CalculateWaypoint(m_path[m_next_rendezvous_point]->GetPosition()));
+      Simulator::Schedule(m_last_waypoint.time, &MineMobilityModel::Rendezvous, this);
+  }
 }
 
 } // namespace ns3

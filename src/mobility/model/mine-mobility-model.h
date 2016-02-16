@@ -84,6 +84,10 @@ private:
   void CourseChange(Ptr<const MobilityModel> model);
 
   /**
+   * Adds waypoints along the path to the next RendezvousPoint
+   */
+  void MoveNextRP();
+  /**
    * \brief std::vector containing ns3::Vector objects that describe that
    * path that will be followed
    */
