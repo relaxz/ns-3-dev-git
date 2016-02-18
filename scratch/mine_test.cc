@@ -51,14 +51,22 @@ main (int argc, char *argv[])
   pathABC.push_back(&pointB);
   pathABC.push_back(&pointC);
 
-  //std::vector<RendezvousPoint*> pathCBA;
-  //pathCBA.push_back(&pointC);
-  //pathCBA.push_back(&pointB);
-  //pathCBA.push_back(&pointA);
+  std::vector<RendezvousPoint*> pathCBA;
+  pathCBA.push_back(&pointC);
+  pathCBA.push_back(&pointB);
+  pathCBA.push_back(&pointA);
+
+
+  NS_LOG_UNCOND("AB " << &pointA.GetConnectionTo(&pointB));
+  NS_LOG_UNCOND("BC " << &pointB.GetConnectionTo(&pointC));
+
+  NS_LOG_UNCOND("BA " << &pointB.GetConnectionTo(&pointA));
+  NS_LOG_UNCOND("CB " << &pointC.GetConnectionTo(&pointB));
+
 
   //node 0
   NodeContainer mobileWifiNodes;
-  mobileWifiNodes.Create (1); //nr of nodes
+  mobileWifiNodes.Create (2); //nr of nodes
   Ptr<MineMobilityModel> minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(10), "Priority", IntegerValue(0));
   minemob->SetPath(pathABC); //set path
   Ptr<MobilityModel> model = minemob->GetObject<MobilityModel>();
@@ -66,12 +74,11 @@ main (int argc, char *argv[])
   object->AggregateObject(minemob);
 
   //node 1
-  //minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(5), "Priority", IntegerValue(1));
-  //minemob->SetPath(pathCBA);
-  //model = minemob->GetObject<MobilityModel>();
-  //object = mobileWifiNodes.Get(1);
-  //object->AggregateObject(minemob);
-
+  minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(5), "Priority", IntegerValue(1));
+  minemob->SetPath(pathCBA);
+  model = minemob->GetObject<MobilityModel>();
+  object = mobileWifiNodes.Get(1);
+  object->AggregateObject(minemob);
 
 
   AnimationInterface anim ("mine_test.xml"); //change this!

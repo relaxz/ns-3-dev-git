@@ -55,7 +55,7 @@ Connection::GetMobiles(){
 void
 Connection::AddMobile(MineMobilityModel* mob, Time arrival_time){
   m_mobiles.push_back(mob);
-  Simulator::Schedule(arrival_time, &Connection::RemoveMobile, this, mob);
+  Simulator::Schedule(arrival_time - Simulator::Now(), &Connection::RemoveMobile, this, mob);
 }
 
 void
@@ -83,7 +83,7 @@ RendezvousPoint::Connect(RendezvousPoint* rp, std::vector<Vector> waypoints) {
   rp->ConnectOneWay(this, ReverseVector(waypoints));
 }
 
-Connection
+Connection&
 RendezvousPoint::GetConnectionTo(RendezvousPoint* rp) {
   for(uint32_t i=0; i < m_connections.size();i++) {
       if(m_connections[i].GetTarget() == rp) {
@@ -98,7 +98,7 @@ RendezvousPoint::GetConnectionTo(RendezvousPoint* rp) {
   //return NULL;
 }
 
-Connection
+Connection&
 RendezvousPoint::GetConnectionFrom(RendezvousPoint* rp){
   return rp->GetConnectionTo(this);
 }
@@ -127,15 +127,15 @@ RendezvousPoint::GetAllApproachingMobiles(){
 }
 
 bool
-RendezvousPoint::IsConnectionBusy(RendezvousPoint* rp){
-  //todo everything
- return false;
+RendezvousPoint::IsConnectionBusyFrom(RendezvousPoint* rp){
+  Connection conn = GetConnectionFrom(rp);
+  return conn.GetMobiles().size() > 0;
 }
 
 Time
-RendezvousPoint::GetClearTime(RendezvousPoint* rp){
+RendezvousPoint::GetTimeLeftUntilClear(RendezvousPoint* rp){
   //todo give an accurate response
- return Seconds(1);
+  return Seconds(1);
 }
 
 Vector RendezvousPoint::GetPosition(void) {

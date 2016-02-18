@@ -47,20 +47,27 @@ void MineMobilityModel::SetPath (std::vector<RendezvousPoint*> &path)
 
 void
 MineMobilityModel::Rendezvous(){
-  NS_LOG_UNCOND("Reached rendezvous point " << m_next_rendezvous_point);
+  NS_LOG_UNCOND("Reached rendezvous point " << m_next_rendezvous_point <<  " at " << Simulator::Now().GetSeconds() << " s");
   Vector pos = GetPosition();
   NS_LOG_UNCOND("position: (" << pos.x << ", " << pos.y << ", " << pos.z << ")");
   // Decide if we need to wait at this rp
-  if (m_path[m_next_rendezvous_point]->IsConnectionBusy(m_path[m_next_rendezvous_point]))
+  // If we are out of places to go, just stop
+  if (m_next_rendezvous_point >= m_path.size() - 1){
+      m_waypointMobility->EndMobility();
+      NS_LOG_UNCOND("Reached destination.");
+  }
+  // check if the path is clear
+  //todo also check if we the path will be clear of higher priority mobs until we reach the next rp
+  //todo look ahead beyond the next rp
+  else if (m_path[m_next_rendezvous_point]->IsConnectionBusyFrom(m_path[m_next_rendezvous_point + 1]))
     {
       NS_LOG_UNCOND("Stop and wait, path to next rp is in use");
       // Try again later
-      Time timeleft = time2timeleft(m_path[m_next_rendezvous_point]->GetClearTime(m_path[m_next_rendezvous_point]));
+      Time timeleft = m_path[m_next_rendezvous_point]->GetTimeLeftUntilClear(m_path[m_next_rendezvous_point]);
       Simulator::Schedule(timeleft,
 			  &MineMobilityModel::Rendezvous,
 			  this);
-  }
-  //todo look ahead beyond the next rp
+    }
   else{
 
       // Continue along the path
@@ -74,7 +81,7 @@ MineMobilityModel::MineMobilityModel ()
   m_priority = 0;
   m_next_rendezvous_point = 0;
   m_waypointMobility = CreateObjectWithAttributes<WaypointMobilityModel> ();
-  // make couse changes in the waypoint mobility model triggers a course change in this model.
+  // make course changes in the waypoint mobility model trigger a course change in this model.
   m_waypointMobility->TraceConnectWithoutContext ("CourseChange", MakeCallback (&MineMobilityModel::CourseChange, this));
 }
 MineMobilityModel::~MineMobilityModel ()
@@ -122,8 +129,6 @@ MineMobilityModel::TravelTime(Vector v1, Vector v2)
 void
 MineMobilityModel::AddWaypoint(const Waypoint& wpt)
 {
-  NS_LOG_UNCOND("AddWaypoint: wpt=(" << wpt.time.GetSeconds() << ", ("<< wpt.position.x << ", "
-		<< wpt.position.y << ", " << wpt.position.z << "))");
   m_last_waypoint = wpt;
   m_waypointMobility->AddWaypoint(wpt);
 }
@@ -137,23 +142,18 @@ MineMobilityModel::CourseChange(Ptr<const MobilityModel> model)
 void
 MineMobilityModel::MoveNextRP(){
   m_next_rendezvous_point++;
-  // If we are out of places to go, just stop
-  if (m_next_rendezvous_point >= m_path.size()){
-      m_waypointMobility->EndMobility();
-      NS_LOG_UNCOND("Reached destination.");
+  // The current position must be added as a waypoint again to prevent
+  // teleportation to the first waypoint on the path
+  AddWaypoint(Waypoint(Simulator::Now(), GetPosition()));
+  std::vector<Vector> points = m_path[m_next_rendezvous_point - 1]->GetConnectionPoints(m_path[m_next_rendezvous_point]);
+  for (uint32_t i = 0; i < points.size(); i++){
+      AddWaypoint(CalculateWaypoint(points[i]));
   }
-  else{
-      // The current position must be added as a waypoint again to prevent
-      // teleportation to the first waypoint on the path
-      AddWaypoint(Waypoint(Simulator::Now(), GetPosition()));
-      std::vector<Vector> points = m_path[m_next_rendezvous_point - 1]->GetConnectionPoints(m_path[m_next_rendezvous_point]);
-      for (uint32_t i = 0; i < points.size(); i++){
-	  AddWaypoint(CalculateWaypoint(points[i]));
-      }
-      AddWaypoint(CalculateWaypoint(m_path[m_next_rendezvous_point]->GetPosition()));
-      Time timeleft = time2timeleft(m_last_waypoint.time);
-      Simulator::Schedule(timeleft, &MineMobilityModel::Rendezvous, this);
-  }
+  AddWaypoint(CalculateWaypoint(m_path[m_next_rendezvous_point]->GetPosition()));
+  Time timeleft = time2timeleft(m_last_waypoint.time);
+  Simulator::Schedule(timeleft, &MineMobilityModel::Rendezvous, this);
+  //list this mobile as traveling along the path
+  m_path[m_next_rendezvous_point - 1]->GetConnectionTo(m_path[m_next_rendezvous_point]).AddMobile(this, m_last_waypoint.time);
 }
 
 Time

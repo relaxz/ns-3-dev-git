@@ -84,13 +84,13 @@ public:
    * Returns the connection from this RendezvousPoint to another RendezvousPoint rp.
    * The connection must exist.
    */
-  Connection GetConnectionTo(RendezvousPoint* rp);
+  Connection& GetConnectionTo(RendezvousPoint* rp);
 
   /*
    * Returns the connection from the RendezvousPoint rp to this RendezvousPoint
    * The connection must exist.
    */
-  Connection GetConnectionFrom(RendezvousPoint* rp);
+  Connection& GetConnectionFrom(RendezvousPoint* rp);
 
   /*
     * returns the waypoints of a connection from this to RendezvousPoint rp
@@ -111,13 +111,13 @@ public:
   /*
    * Returns true if an object is approaching on the path from rp
    */
-  bool IsConnectionBusy(RendezvousPoint* rp);
+  bool IsConnectionBusyFrom(RendezvousPoint* rp);
 
   /*
-   * Returns the time when the connection to RendezvousPoint rp is expected to
-   * be usable from this RendezvousPoint.
+   * Returns the time left until this connection is expected to
+   * be usable from this RendezvousPoint to RendezvousPoint rp.
    */
-  Time GetClearTime(RendezvousPoint* rp);
+  Time GetTimeLeftUntilClear(RendezvousPoint* rp);
 
   /*
    * Returns position of this RendezvousPoint
