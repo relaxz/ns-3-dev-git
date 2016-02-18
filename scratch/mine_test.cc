@@ -27,54 +27,25 @@ NS_LOG_COMPONENT_DEFINE ("Waypoints");
 int 
 main (int argc, char *argv[])
 {
-
-  RendezvousPoint pointA(Vector(0.0,500.0,0.0));
-  RendezvousPoint pointB(Vector(500.0,500.0,0.0));
-  RendezvousPoint pointC(Vector(500.0,0.0,0.0));
-
-  std::vector<Vector> a_to_b;
-  a_to_b.push_back(Vector(100,490,0));
-  a_to_b.push_back(Vector(200,510,0));
-  a_to_b.push_back(Vector(300,490,0));
-  a_to_b.push_back(Vector(400,510,0));
-  pointA.Connect(&pointB, a_to_b);
-
-  std::vector<Vector> b_to_c;
-  b_to_c.push_back(Vector(490,400,0));
-  b_to_c.push_back(Vector(510,300,0));
-  b_to_c.push_back(Vector(490,200,0));
-  b_to_c.push_back(Vector(510,100,0));
-  pointB.Connect(&pointC, b_to_c);
-
-  std::vector<RendezvousPoint*> pathABC;
-  pathABC.push_back(&pointA);
-  pathABC.push_back(&pointB);
-  pathABC.push_back(&pointC);
-
-  //std::vector<RendezvousPoint*> pathCBA;
-  //pathCBA.push_back(&pointC);
-  //pathCBA.push_back(&pointB);
-  //pathCBA.push_back(&pointA);
+  NodeContainer mobileWifiNodes;
+  mobileWifiNodes.Create (); //nr of nodes
+  MineMobilityPaths pts;
 
   //node 0
-  NodeContainer mobileWifiNodes;
-  mobileWifiNodes.Create (1); //nr of nodes
   Ptr<MineMobilityModel> minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(10), "Priority", IntegerValue(0));
-  minemob->SetPath(pathABC); //set path
+  minemob->SetPath(pts.pathABC); //set path
   Ptr<MobilityModel> model = minemob->GetObject<MobilityModel>();
   Ptr<Object> object = mobileWifiNodes.Get(0);
   object->AggregateObject(minemob);
 
   //node 1
-  //minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(5), "Priority", IntegerValue(1));
-  //minemob->SetPath(pathCBA);
-  //model = minemob->GetObject<MobilityModel>();
-  //object = mobileWifiNodes.Get(1);
-  //object->AggregateObject(minemob);
+  minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(5), "Priority", IntegerValue(1));
+  minemob->SetPath(pts.pathCBA);
+  model = minemob->GetObject<MobilityModel>();
+  object = mobileWifiNodes.Get(1);
+  object->AggregateObject(minemob);
 
-
-
-  AnimationInterface anim ("mine_test.xml"); //change this!
+  AnimationInterface anim ("mine_test1.xml"); //change this!
 
   Simulator::Run ();
   Simulator::Destroy ();
