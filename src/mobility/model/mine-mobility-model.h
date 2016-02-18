@@ -84,6 +84,16 @@ private:
   void CourseChange(Ptr<const MobilityModel> model);
 
   /**
+   * Adds waypoints along the path to the next RendezvousPoint
+   */
+  void MoveNextRP();
+  /**
+   * \brief Converts time relative to simulation start into time relative to
+   * current simulation time (the form that Simulator::Schedule expects).
+   * \param t The time relative to simulation start
+   */
+  Time time2timeleft(Time t);
+  /**
    * \brief std::vector containing ns3::Vector objects that describe that
    * path that will be followed
    */

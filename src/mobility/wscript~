@@ -24,6 +24,7 @@ def build(bld):
         'model/rendezvous-point.cc',
         'helper/mobility-helper.cc',
         'helper/ns2-mobility-helper.cc',
+        'helper/mine-mobility-paths.cc',
         ]
 
     mobility_test = bld.create_ns3_module_test_library('mobility')
@@ -61,6 +62,7 @@ def build(bld):
         'model/rendezvous-point.h',
         'helper/mobility-helper.h',
         'helper/ns2-mobility-helper.h',
+        'helper/mine-mobility-paths.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

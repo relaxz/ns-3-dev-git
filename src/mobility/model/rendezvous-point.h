@@ -12,6 +12,7 @@
 #include "ns3/vector.h"
 
 namespace ns3 {
+class MineMobilityModel;
 class RendezvousPoint;
 
 /*
@@ -34,24 +35,33 @@ public:
   RendezvousPoint* GetTarget(void);
 
   /*
-   * Returns the pointer for the nodes on the connection
+   * Returns a list of all mobile objects on this connection
    */
-  std::vector<Node*> GetNodes(void);
+  std::vector<MineMobilityModel*> GetMobiles();
 
   /*
-   * adds a node to connection
+   * Adds a mobile object to the connection and schedules its removal
    */
-  void AddNode(Node*);
-
-  /*
-   * Removes a node from connection
-   */
-  void RemoveNode(Node*);
-
+  void AddMobile(MineMobilityModel* mob, Time arrival_time);
 
 private:
-  std::vector<Node*> m_nodes;
+  /*
+   * Removes a mobile object from the list of objects using
+   * this connection
+   */
+  void RemoveMobile(MineMobilityModel* mob);
+  /*
+   * A list of all mobile objects currently using this connection
+   */
+  std::vector<MineMobilityModel*> m_mobiles;
+  /*
+   * A list of the position vectors that describe the path
+   * to the destination RendezvousPoint
+   */
   std::vector<Vector> m_waypoints;
+  /*
+   * The RendezvousPoint that will be reached if one follows this connection
+   */
   RendezvousPoint* m_target;
 
 };
@@ -71,14 +81,43 @@ public:
   void Connect(RendezvousPoint* rp, std::vector<Vector> waypoints);
 
   /*
-   * Returns the connection to another RendezvousPoint rp
+   * Returns the connection from this RendezvousPoint to another RendezvousPoint rp.
+   * The connection must exist.
    */
-  Connection GetConnection(RendezvousPoint* rp);
+  Connection& GetConnectionTo(RendezvousPoint* rp);
+
+  /*
+   * Returns the connection from the RendezvousPoint rp to this RendezvousPoint
+   * The connection must exist.
+   */
+  Connection& GetConnectionFrom(RendezvousPoint* rp);
 
   /*
     * returns the waypoints of a connection from this to RendezvousPoint rp
     */
   std::vector<Vector> GetConnectionPoints(RendezvousPoint* rp);
+
+  /*
+   * Returns a list of all objects approaching on the connection from a
+   * RendezvousPoint rp
+   */
+  std::vector<MineMobilityModel*> GetApproachingMobilesFrom(RendezvousPoint* rp);
+
+  /*
+   * Returns a list of all objects approaching on any connection
+   */
+  std::vector<MineMobilityModel*> GetAllApproachingMobiles();
+
+  /*
+   * Returns true if an object is approaching on the path from rp
+   */
+  bool IsConnectionBusyFrom(RendezvousPoint* rp);
+
+  /*
+   * Returns the time left until this connection is expected to
+   * be usable from this RendezvousPoint to RendezvousPoint rp.
+   */
+  Time GetTimeLeftUntilClear(RendezvousPoint* rp);
 
   /*
    * Returns position of this RendezvousPoint
