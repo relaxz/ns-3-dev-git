@@ -28,45 +28,16 @@ int
 main (int argc, char *argv[])
 {
   NodeContainer mobileWifiNodes;
-  mobileWifiNodes.Create (); //nr of nodes
+  mobileWifiNodes.Create (2); //nr of nodes
   MineMobilityPaths pts;
 
-
-  RendezvousPoint pointA(Vector(0.0,500.0,0.0));
-  RendezvousPoint pointB(Vector(500.0,500.0,0.0));
-  RendezvousPoint pointC(Vector(500.0,0.0,0.0));
-
-  std::vector<Vector> a_to_b;
-  a_to_b.push_back(Vector(100,490,0));
-  a_to_b.push_back(Vector(200,510,0));
-  a_to_b.push_back(Vector(300,490,0));
-  a_to_b.push_back(Vector(400,510,0));
-  pointA.Connect(&pointB, a_to_b);
-
-  std::vector<Vector> b_to_c;
-  b_to_c.push_back(Vector(490,400,0));
-  b_to_c.push_back(Vector(510,300,0));
-  b_to_c.push_back(Vector(490,200,0));
-  b_to_c.push_back(Vector(510,100,0));
-  pointB.Connect(&pointC, b_to_c);
-
-  std::vector<RendezvousPoint*> pathABC;
-  pathABC.push_back(&pointA);
-  pathABC.push_back(&pointB);
-  pathABC.push_back(&pointC);
-
-  std::vector<RendezvousPoint*> pathCBA;
-  pathCBA.push_back(&pointC);
-  pathCBA.push_back(&pointB);
-  pathCBA.push_back(&pointA);
-
-
+/*
   NS_LOG_UNCOND("AB " << &pointA.GetConnectionTo(&pointB));
   NS_LOG_UNCOND("BC " << &pointB.GetConnectionTo(&pointC));
 
   NS_LOG_UNCOND("BA " << &pointB.GetConnectionTo(&pointA));
   NS_LOG_UNCOND("CB " << &pointC.GetConnectionTo(&pointB));
-
+*/
 
   //node 0
   Ptr<MineMobilityModel> minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(10), "Priority", IntegerValue(0));
