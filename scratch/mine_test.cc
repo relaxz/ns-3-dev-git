@@ -41,14 +41,14 @@ main (int argc, char *argv[])
 
   //node 0
   Ptr<MineMobilityModel> minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(10), "Priority", IntegerValue(0));
-  minemob->SetPath(pts.pathABC); //set path
+  minemob->SetPath(pts.pathFH); //set path
   Ptr<MobilityModel> model = minemob->GetObject<MobilityModel>();
   Ptr<Object> object = mobileWifiNodes.Get(0);
   object->AggregateObject(minemob);
 
   //node 1
   minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(5), "Priority", IntegerValue(1));
-  minemob->SetPath(pts.pathCBA);
+  minemob->SetPath(pts.pathHF);
   model = minemob->GetObject<MobilityModel>();
   object = mobileWifiNodes.Get(1);
   object->AggregateObject(minemob);

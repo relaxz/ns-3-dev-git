@@ -67,7 +67,7 @@ MineMobilityPaths::MineMobilityPaths(void) {
    e_to_i.push_back(Vector(500.0,1200.0,0.0));
    e_to_i.push_back(Vector(500.0,1300.0,0.0));
    e_to_i.push_back(Vector(500.0,1400.0,0.0));
-   pointE.Connect(&pointE, e_to_i);
+   pointE.Connect(&pointI, e_to_i);
 
    //defines paths
    pathABC.push_back(&pointA);
@@ -84,11 +84,11 @@ MineMobilityPaths::MineMobilityPaths(void) {
    pathFH.push_back(&pointD);
    pathFH.push_back(&pointH);
 
-   pathFH.push_back(&pointH);
-   pathFH.push_back(&pointD);
-   pathFH.push_back(&pointB);
-   pathFH.push_back(&pointA);
-   pathFH.push_back(&pointF);
+   pathHF.push_back(&pointH);
+   pathHF.push_back(&pointD);
+   pathHF.push_back(&pointB);
+   pathHF.push_back(&pointA);
+   pathHF.push_back(&pointF);
 
    pathGI.push_back(&pointG);
    pathGI.push_back(&pointC);
@@ -101,6 +101,7 @@ MineMobilityPaths::MineMobilityPaths(void) {
    pathIG.push_back(&pointB);
    pathIG.push_back(&pointC);
    pathIG.push_back(&pointG);
+
 }
 
 }//ns3
