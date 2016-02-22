@@ -126,6 +126,20 @@ RendezvousPoint::GetAllApproachingMobiles(){
   return all_mobs;
 }
 
+std::vector<MineMobilityModel*>
+RendezvousPoint::GetApproachingMobilesExceptFrom(RendezvousPoint* rp){
+  std::vector<MineMobilityModel*> result_mobs;
+  for(uint32_t i; i<m_connections.size(); i++){
+      if (m_connections[i].GetTarget() != rp){
+	  std::vector<MineMobilityModel*> mobs = m_connections[i].GetMobiles();
+	  for(uint32_t j; j<mobs.size(); j++){
+	      result_mobs.push_back(mobs[j]);
+	  }
+      }
+  }
+  return result_mobs;
+}
+
 bool
 RendezvousPoint::IsConnectionBusyFrom(RendezvousPoint* rp){
   Connection conn = GetConnectionFrom(rp);
