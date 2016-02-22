@@ -47,7 +47,9 @@ void MineMobilityModel::SetPath (std::vector<RendezvousPoint*> &path)
 
 void
 MineMobilityModel::Rendezvous(){
-  NS_LOG_UNCOND("Reached rendezvous point " << m_next_rendezvous_point <<  " at " << Simulator::Now().GetSeconds() << " s");
+  NS_LOG_UNCOND("-----------------------------------");
+  NS_LOG_UNCOND(this << ": Priority=" << m_priority);
+  NS_LOG_UNCOND(this << ": Reached rendezvous point " << m_next_rendezvous_point <<  " at " << Simulator::Now().GetSeconds() << " s");
   Vector pos = GetPosition();
   NS_LOG_UNCOND("position: (" << pos.x << ", " << pos.y << ", " << pos.z << ")");
 
@@ -62,11 +64,10 @@ MineMobilityModel::Rendezvous(){
   // check if the connection is clear
   else if (rp_current->IsConnectionBusyFrom(rp_target))
     {
+      NS_LOG_UNCOND(this << ": Stop and wait, path to next rp is in use");
       std::vector<MineMobilityModel*> others = rp_current->GetApproachingMobilesFrom(rp_target);
-      NS_ASSERT(IsPriorityHigherThan(others));
-      NS_LOG_UNCOND("Stop and wait, path to next rp is in use");
+      NS_ASSERT(!IsPriorityHigherThan(others));
       // Try again later
-      //fixme shouldn't this be m_next_rendezvous_point+1??---------------------------v
       Time timeleft = rp_current->GetTimeLeftUntilClear(rp_target);
       Simulator::Schedule(timeleft,
 			  &MineMobilityModel::Rendezvous,
@@ -75,6 +76,7 @@ MineMobilityModel::Rendezvous(){
   // check if the connection will be clear of higher priority mobs until we reach the next rp
   // by checking the nodes approaching next rp
   else if (!IsNextConnectionClearUntilPassed()){
+      NS_LOG_UNCOND("Stop and wait for higher priority mobiles");
       //try again later
       Time timeleft = TravelTime(rp_target);
       Simulator::Schedule(timeleft,
@@ -214,10 +216,10 @@ MineMobilityModel::IsPriorityHigherThan(std::vector<MineMobilityModel*> others){
     {
     if (IsPriorityHigherThan(others[i]))
       {
-	return false;
+	return true;
     }
   }
-  return true;
+  return false;
 }
 
 bool

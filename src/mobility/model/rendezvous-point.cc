@@ -54,6 +54,7 @@ Connection::GetMobiles(){
 
 void
 Connection::AddMobile(MineMobilityModel* mob, Time arrival_time){
+  NS_LOG_UNCOND("AddMobile " << mob << " to connection " << this);
   m_mobiles.push_back(mob);
   Simulator::Schedule(arrival_time - Simulator::Now(), &Connection::RemoveMobile, this, mob);
 }
@@ -111,6 +112,7 @@ RendezvousPoint::GetConnectionPoints(RendezvousPoint* rp) {
 
 std::vector<MineMobilityModel*>
 RendezvousPoint::GetApproachingMobilesFrom(RendezvousPoint* rp){
+  NS_LOG_UNCOND("ApproachingMobilesFrom " << &GetConnectionFrom(rp) << ": " << GetConnectionFrom(rp).GetMobiles().size());
   return GetConnectionFrom(rp).GetMobiles();
 }
 
@@ -126,17 +128,22 @@ RendezvousPoint::GetAllApproachingMobiles(){
   return all_mobs;
 }
 
+//fixme looks like this never finds any mobiles :(
 std::vector<MineMobilityModel*>
 RendezvousPoint::GetApproachingMobilesExceptFrom(RendezvousPoint* rp){
   std::vector<MineMobilityModel*> result_mobs;
-  for(uint32_t i; i<m_connections.size(); i++){
-      if (m_connections[i].GetTarget() != rp){
-	  std::vector<MineMobilityModel*> mobs = m_connections[i].GetMobiles();
-	  for(uint32_t j; j<mobs.size(); j++){
+  for(uint32_t i = 0; i<m_connections.size(); i++)
+    {
+      RendezvousPoint* target = m_connections[i].GetTarget();
+      if (target != rp)
+	{
+	  std::vector<MineMobilityModel*> mobs = GetApproachingMobilesFrom(target);
+	  for(uint32_t j = 0; j<mobs.size(); j++){
 	      result_mobs.push_back(mobs[j]);
 	  }
-      }
-  }
+	}
+    }
+  NS_LOG_UNCOND("ApproachingMobiles: " << result_mobs.size() << " mobile(s) approaching");
   return result_mobs;
 }
 
