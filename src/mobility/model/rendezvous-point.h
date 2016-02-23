@@ -109,6 +109,11 @@ public:
   std::vector<MineMobilityModel*> GetAllApproachingMobiles();
 
   /*
+   * Returns a list of all objects approaching on any connection except rp
+   */
+  std::vector<MineMobilityModel*> GetApproachingMobilesExceptFrom(RendezvousPoint* rp);
+
+  /*
    * Returns true if an object is approaching on the path from rp
    */
   bool IsConnectionBusyFrom(RendezvousPoint* rp);

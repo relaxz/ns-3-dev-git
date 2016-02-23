@@ -47,27 +47,42 @@ void MineMobilityModel::SetPath (std::vector<RendezvousPoint*> &path)
 
 void
 MineMobilityModel::Rendezvous(){
-  NS_LOG_UNCOND("Reached rendezvous point " << m_next_rendezvous_point <<  " at " << Simulator::Now().GetSeconds() << " s");
+  NS_LOG_UNCOND("-----------------------------------");
+  NS_LOG_UNCOND(this << ": Priority=" << m_priority);
+  NS_LOG_UNCOND(this << ": Reached rendezvous point " << m_next_rendezvous_point <<  " at " << Simulator::Now().GetSeconds() << " s");
   Vector pos = GetPosition();
   NS_LOG_UNCOND("position: (" << pos.x << ", " << pos.y << ", " << pos.z << ")");
+
+  RendezvousPoint* rp_current = m_path[m_next_rendezvous_point];
+  RendezvousPoint* rp_target = m_path[m_next_rendezvous_point + 1];
   // Decide if we need to wait at this rp
   // If we are out of places to go, just stop
   if (m_next_rendezvous_point >= m_path.size() - 1){
       m_waypointMobility->EndMobility();
       NS_LOG_UNCOND("Reached destination.");
   }
-  // check if the path is clear
-  //todo also check if we the path will be clear of higher priority mobs until we reach the next rp
-  //todo look ahead beyond the next rp
-  else if (m_path[m_next_rendezvous_point]->IsConnectionBusyFrom(m_path[m_next_rendezvous_point + 1]))
+  // check if the connection is clear
+  else if (rp_current->IsConnectionBusyFrom(rp_target))
     {
-      NS_LOG_UNCOND("Stop and wait, path to next rp is in use");
+      NS_LOG_UNCOND(this << ": Stop and wait, path to next rp is in use");
+      std::vector<MineMobilityModel*> others = rp_current->GetApproachingMobilesFrom(rp_target);
+      NS_ASSERT(!IsPriorityHigherThan(others));
       // Try again later
-      Time timeleft = m_path[m_next_rendezvous_point]->GetTimeLeftUntilClear(m_path[m_next_rendezvous_point]);
+      Time timeleft = rp_current->GetTimeLeftUntilClear(rp_target);
       Simulator::Schedule(timeleft,
 			  &MineMobilityModel::Rendezvous,
 			  this);
     }
+  // check if the connection will be clear of higher priority mobs until we reach the next rp
+  // by checking the nodes approaching next rp
+  else if (!IsNextConnectionClearUntilPassed()){
+      NS_LOG_UNCOND("Stop and wait for higher priority mobiles");
+      //try again later
+      Time timeleft = TravelTime(rp_target);
+      Simulator::Schedule(timeleft,
+      			  &MineMobilityModel::Rendezvous,
+      			  this);
+  }
   else{
 
       // Continue along the path
@@ -87,6 +102,7 @@ MineMobilityModel::MineMobilityModel ()
 MineMobilityModel::~MineMobilityModel ()
 {
 }
+
 void
 MineMobilityModel::DoDispose (void)
 {
@@ -126,6 +142,12 @@ MineMobilityModel::TravelTime(Vector v1, Vector v2)
   return Seconds(CalculateDistance(v1, v2) / m_speed);
 }
 
+Time
+MineMobilityModel::TravelTime(RendezvousPoint* rp){
+  //return Seconds(GetDistance(rp)); //todo distance to rp function, waiting for ravve
+  return Seconds(1);
+}
+
 void
 MineMobilityModel::AddWaypoint(const Waypoint& wpt)
 {
@@ -154,6 +176,68 @@ MineMobilityModel::MoveNextRP(){
   Simulator::Schedule(timeleft, &MineMobilityModel::Rendezvous, this);
   //list this mobile as traveling along the path
   m_path[m_next_rendezvous_point - 1]->GetConnectionTo(m_path[m_next_rendezvous_point]).AddMobile(this, m_last_waypoint.time);
+}
+
+bool
+MineMobilityModel::IsNextConnectionClearUntilPassed(){
+  // it is assumed that we are at an rp but have not incremented m_next_rendezvous_point yet
+  RendezvousPoint* rp_current = m_path[m_next_rendezvous_point];
+  RendezvousPoint* rp_target = m_path[m_next_rendezvous_point + 1];
+  std::vector<MineMobilityModel*> candidate_collisions = rp_target->GetApproachingMobilesExceptFrom(rp_current);
+  for(uint32_t i = 0; i < candidate_collisions.size(); i++){
+      MineMobilityModel* other = candidate_collisions[i];
+      if (IsPriorityLowerThan(other)
+	  && IsGoingToCollideSoon(other)
+	  && !IsOtherTooSlow(other, rp_target))
+	{
+	return false;
+      }
+  }
+  return true;
+}
+
+bool
+MineMobilityModel::IsPriorityLowerThan(MineMobilityModel* other){
+  //UintegerValue other_priority;
+  //other->GetAttribute("Priority", other_priority);
+  return m_priority < other->m_priority;
+}
+
+bool
+MineMobilityModel::IsPriorityHigherThan(MineMobilityModel* other){
+  //UintegerValue other_priority;
+  //other->GetAttribute("Priority", other_priority);
+  return m_priority > other->m_priority;
+}
+
+bool
+MineMobilityModel::IsPriorityHigherThan(std::vector<MineMobilityModel*> others){
+  for(uint32_t i = 0; i < others.size(); i++)
+    {
+    if (IsPriorityHigherThan(others[i]))
+      {
+	return true;
+    }
+  }
+  return false;
+}
+
+bool
+MineMobilityModel::IsOtherTooSlow(MineMobilityModel* other, RendezvousPoint* rp){
+  return TravelTime(rp) < other->TravelTime(rp);
+}
+
+bool
+MineMobilityModel::IsGoingToCollideSoon(MineMobilityModel* other){
+  // if other is going to stop, it will not collide with this
+  if (other->m_next_rendezvous_point == other->m_path.size() - 1){
+      return false;
+  }
+  // if this mob is at rp A and is going to rp B next,
+  // then we check if other is going to B then A
+  // if this is true, then they are going to collide soon
+  return other->m_path[other->m_next_rendezvous_point] == m_path[m_next_rendezvous_point + 1]
+         && other->m_path[other->m_next_rendezvous_point + 1] == m_path[m_next_rendezvous_point];
 }
 
 Time
