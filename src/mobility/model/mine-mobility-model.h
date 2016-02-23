@@ -122,6 +122,11 @@ private:
    * next connection in different directions "soon".
    */
   bool IsGoingToCollideSoon(MineMobilityModel* other);
+  /**
+   * Returns true if there is a mobile with higher priority than this mobile
+   * waiting for this mobile's next connection to clear.
+   */
+  bool IsHigherPriorityWaiting();
 
   /**
    * \brief Converts time relative to simulation start into time relative to

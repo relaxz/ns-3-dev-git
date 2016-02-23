@@ -133,14 +133,41 @@ public:
    * Reverses the given vector and returns it.
    */
   std::vector<Vector> ReverseVector(std::vector<Vector>);
+  /**
+   * Adds a mobile to the waiting list and schedules its removal
+   */
+  void AddWaitingMobile(MineMobilityModel* mob, Time arrival_time);
+  /**
+   * Returns the list of all mobiles waiting at this rp. Mobiles that have finished
+   * their paths are not listed.
+   */
+  std::vector<MineMobilityModel*> GetWaitingMobiles ();
   /*
    * Two RendezvousPoints are considered equal if their positions
    * are the same
    */
   bool operator== (RendezvousPoint & o);
 private:
+  /**
+   * Removes a mobile from the waiting list
+   */
+  void RemoveWaitingMobile(MineMobilityModel* mob);
+  /**
+   * The position of this RendezvousPoint
+   */
   Vector m_pos;
+  /**
+   * Lists all connections to other RendezvousPoints that this rp has.
+   */
   std::vector<Connection> m_connections;
+  /**
+   * The list of all mobiles waiting at this rp. Mobiles that have finished
+   * moving for good are not listed.
+   */
+  std::vector<MineMobilityModel*> m_waiting_mobiles;
+  /**
+   * Connects this RendezvousPoint to rp using the points in waypoints.
+   */
   void ConnectOneWay(RendezvousPoint* rp, std::vector<Vector> waypoints);
 };
 }

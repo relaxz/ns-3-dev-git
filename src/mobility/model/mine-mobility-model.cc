@@ -67,8 +67,21 @@ MineMobilityModel::Rendezvous(){
       NS_LOG_UNCOND(this << ": Stop and wait, path to next rp is in use");
       std::vector<MineMobilityModel*> others = rp_current->GetApproachingMobilesFrom(rp_target);
       NS_ASSERT(!IsPriorityHigherThan(others));
-      // Try again later
       Time timeleft = rp_current->GetTimeLeftUntilClear(rp_target);
+      // list us as waiting
+      rp_current->AddWaitingMobile(this, timeleft + Simulator::Now ());
+      // Try again later
+      Simulator::Schedule(timeleft,
+			  &MineMobilityModel::Rendezvous,
+			  this);
+    }
+  else if (IsHigherPriorityWaiting())
+    {
+      NS_LOG_UNCOND("Stop and wait for higher priority mobiles that are waiting on the other side");
+      Time timeleft = rp_current->GetTimeLeftUntilClear(rp_target);
+      // List us as waiting
+      rp_current->AddWaitingMobile(this, timeleft + Simulator::Now ());
+      // Try again later
       Simulator::Schedule(timeleft,
 			  &MineMobilityModel::Rendezvous,
 			  this);
@@ -77,8 +90,10 @@ MineMobilityModel::Rendezvous(){
   // by checking the nodes approaching next rp
   else if (!IsNextConnectionClearUntilPassed()){
       NS_LOG_UNCOND("Stop and wait for higher priority mobiles");
-      //try again later
       Time timeleft = TravelTime(rp_target);
+      // List us as waiting
+      rp_current->AddWaitingMobile(this, timeleft + Simulator::Now ());
+      // Try again later
       Simulator::Schedule(timeleft,
       			  &MineMobilityModel::Rendezvous,
       			  this);
@@ -238,6 +253,25 @@ MineMobilityModel::IsGoingToCollideSoon(MineMobilityModel* other){
   // if this is true, then they are going to collide soon
   return other->m_path[other->m_next_rendezvous_point] == m_path[m_next_rendezvous_point + 1]
          && other->m_path[other->m_next_rendezvous_point + 1] == m_path[m_next_rendezvous_point];
+}
+
+bool
+MineMobilityModel::IsHigherPriorityWaiting()
+{
+  std::vector<MineMobilityModel*> mobs;
+  mobs = m_path[m_next_rendezvous_point + 1]->GetWaitingMobiles ();
+//  NS_LOG_UNCOND("IsHigherPriorityWaiting (rp " << m_path[m_next_rendezvous_point + 1] << ") mobs.size()=" << mobs.size());
+//  NS_LOG_UNCOND(m_path[m_next_rendezvous_point] << " " << m_path[m_next_rendezvous_point + 1] << " " << m_path[m_next_rendezvous_point + 2]
+//		<< " " << m_path[m_next_rendezvous_point + 3]);
+  for (uint32_t i = 0; i < mobs.size(); i++)
+    {
+      if (IsPriorityLowerThan(mobs[i])
+	  && IsGoingToCollideSoon(mobs[i]))
+	{
+	  return true;
+	}
+    }
+  return false;
 }
 
 Time

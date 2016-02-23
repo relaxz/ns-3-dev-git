@@ -163,6 +163,25 @@ Vector RendezvousPoint::GetPosition(void) {
   return m_pos;
 }
 
+void
+RendezvousPoint::AddWaitingMobile(MineMobilityModel* mob, Time arrival_time){
+  NS_LOG_UNCOND("AddWaitingMobile " << mob << " to rp " << this);
+  m_waiting_mobiles.push_back(mob);
+  Simulator::Schedule(arrival_time - Simulator::Now(), &RendezvousPoint::RemoveWaitingMobile, this, mob);
+}
+
+void
+RendezvousPoint::RemoveWaitingMobile(MineMobilityModel* mob){
+  NS_LOG_UNCOND("RemoveWaitingMobile " << mob << " from rp " << this);
+  m_waiting_mobiles.erase(std::remove(m_waiting_mobiles.begin(), m_waiting_mobiles.end(), mob), m_waiting_mobiles.end());
+}
+
+std::vector<MineMobilityModel*>
+RendezvousPoint::GetWaitingMobiles ()
+{
+  return m_waiting_mobiles;
+}
+
 std::vector<Vector> RendezvousPoint::ReverseVector(std::vector<Vector> vect) {
   std::vector<Vector> rev;
   uint32_t l = vect.size();
