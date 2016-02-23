@@ -16,6 +16,15 @@ namespace ns3 {
 /*
  * Predefines public RendezvousPoints(global), connections and paths for MineMobilityModel.
  * Known paths are: ABC, CBA, FH, HF, GI, IG
+ * 	     G
+ * 	     |
+ * 	     C
+ * 	     |
+ * F -- A -- B -- D -- H
+ * 	     |
+ * 	     E
+ * 	     |
+ * 	     I
  */
 class MineMobilityPaths {
 public:
@@ -36,6 +45,7 @@ public:
   std::vector<RendezvousPoint*> pathHF;
   std::vector<RendezvousPoint*> pathGI;
   std::vector<RendezvousPoint*> pathIG;
+  std::vector<RendezvousPoint*> pathX;
 
 };
 
