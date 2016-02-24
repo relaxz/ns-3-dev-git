@@ -16,7 +16,6 @@
 
 #include "ns3/core-module.h"
 #include "ns3/vector.h"
-
 #include "ns3/netanim-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/string.h"
@@ -28,30 +27,15 @@ int
 main (int argc, char *argv[])
 {
   NodeContainer mobileWifiNodes;
-  mobileWifiNodes.Create (2); //nr of nodes
+  mobileWifiNodes.Create (3); //nr of nodes
   MineMobilityPaths pts;
+  MineMobilityHelper mHelper;
+  mHelper.Install (mobileWifiNodes.Get (0), pts.pathFH, mHelper.CAR);
+  mHelper.Install (mobileWifiNodes.Get (1), pts.pathIG, mHelper.DUMPER);
+  mHelper.Install (mobileWifiNodes.Get (2), pts.pathGI, mHelper.LOADER);
+  //mHelper.Install (mobileWifiNodes.Get (3), pts.pathHF, 7, 1);
 
-/*
-  NS_LOG_UNCOND("AB " << &pointA.GetConnectionTo(&pointB));
-  NS_LOG_UNCOND("BC " << &pointB.GetConnectionTo(&pointC));
-
-  NS_LOG_UNCOND("BA " << &pointB.GetConnectionTo(&pointA));
-  NS_LOG_UNCOND("CB " << &pointC.GetConnectionTo(&pointB));
-*/
-
-  //node 0
-  Ptr<MineMobilityModel> minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(10), "Priority", IntegerValue(0));
-  minemob->SetPath(pts.pathFH); //set path
-  Ptr<MobilityModel> model = minemob->GetObject<MobilityModel>();
-  Ptr<Object> object = mobileWifiNodes.Get(0);
-  object->AggregateObject(minemob);
-
-  //node 1
-  minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(5), "Priority", IntegerValue(1));
-  minemob->SetPath(pts.pathHF);
-  model = minemob->GetObject<MobilityModel>();
-  object = mobileWifiNodes.Get(1);
-  object->AggregateObject(minemob);
+  pts.DisplayMinePaths ();
 
   AnimationInterface anim ("mine_test.xml"); //change this!
 

@@ -13,7 +13,7 @@
 
 namespace ns3 {
 
-/*
+/**
  * Predefines public RendezvousPoints(global), connections and paths for MineMobilityModel.
  * Known paths are: ABC, CBA, FH, HF, GI, IG
  * 	     G
@@ -28,7 +28,10 @@ namespace ns3 {
  */
 class MineMobilityPaths {
 public:
-  MineMobilityPaths(void);
+  /**
+   * Sets all Paths, Connections and RendenzvousPoints
+   */
+  MineMobilityPaths ();
 
   std::vector<Vector> a_to_b;
   std::vector<Vector> b_to_c;
@@ -45,7 +48,23 @@ public:
   std::vector<RendezvousPoint*> pathHF;
   std::vector<RendezvousPoint*> pathGI;
   std::vector<RendezvousPoint*> pathIG;
-  std::vector<RendezvousPoint*> pathX;
+
+  std::vector<RendezvousPoint*> pathA;
+  std::vector<RendezvousPoint*> pathB;
+  std::vector<RendezvousPoint*> pathC;
+  std::vector<RendezvousPoint*> pathD;
+  std::vector<RendezvousPoint*> pathE;
+  std::vector<RendezvousPoint*> pathF;
+  std::vector<RendezvousPoint*> pathG;
+  std::vector<RendezvousPoint*> pathH;
+  std::vector<RendezvousPoint*> pathI;
+
+
+  /**
+   * Function used for visualizing RendezvousPoints and connections in NetAnim
+   * Sets stationary nodes in RendezvousPoints and wired connection between them.
+   */
+  void DisplayMinePaths ();
 
 };
 
