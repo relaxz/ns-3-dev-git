@@ -41,7 +41,7 @@ public:
   /**
    * Called when the object reaches a rendezvous point
    */
-  void Rendezvous();
+  void Rendezvous ();
   MineMobilityModel ();
   virtual ~MineMobilityModel ();
 private:
@@ -72,68 +72,68 @@ private:
   /*
    * Returns the time to travel between two points
    */
-  Time TravelTime(Vector v1, Vector v2);
+  Time TravelTime (Vector v1, Vector v2);
   /*
    * Returns the time to travel from the current position of the mobile
    * to the RendezvousPoint rp
    */
-  Time TravelTime(RendezvousPoint* rp);
+  Time TravelTime (RendezvousPoint* rp);
   /*
    * Adds a waypoint to the underlying WaypointMobilityModel
    */
-  void AddWaypoint(const Waypoint& wpt);
+  void AddWaypoint (const Waypoint& wpt);
   /**
    * Callback for when the WaypointMobilityModel has a course change
    */
-  void CourseChange(Ptr<const MobilityModel> model);
+  void CourseChange (Ptr<const MobilityModel> model);
   /**
    * Adds waypoints along the path to the next RendezvousPoint
    */
-  void MoveNextRP();
+  void MoveNextRP ();
   /**
    * Check if we the connection will be clear of higher priority mobs until
    * we reach the next rp. Checks only mobs that are on connections
    * adjacent to the next rp
    */
-  bool IsNextConnectionClearUntilPassed();
+  bool IsNextConnectionClearUntilPassed ();
   /**
    * Returns true if this MineMobilityModel has a higher priority than the other
    * MineMobilityModel.
    */
-  bool IsPriorityLowerThan(MineMobilityModel* other);
+  bool IsPriorityLowerThan (MineMobilityModel* other);
   /**
      * Returns true if this MineMobilityModel has a higher priority than the other
      * MineMobilityModel.
      */
-  bool IsPriorityHigherThan(MineMobilityModel* other);
+  bool IsPriorityHigherThan (MineMobilityModel* other);
   /**
    * Returns true if this MineMobilityModel has a higher priority than all
    * MineMobilityModels in the vector others.
    */
-  bool IsPriorityHigherThan(std::vector<MineMobilityModel*> others);
+  bool IsPriorityHigherThan (std::vector<MineMobilityModel*> others);
   /**
    * Returns true if this mobile will reach rp before other
    * \param other The mobile that this mobile competes with
    * \param rp The RendezvousPoint that the mobiles are racing to
    */
-  bool IsOtherTooSlow(MineMobilityModel* other, RendezvousPoint* rp);
+  bool IsOtherTooSlow (MineMobilityModel* other, RendezvousPoint* rp);
   /**
    * Returns true if this mobile and other mobile want to use this mobile's
    * next connection in different directions "soon".
    */
-  bool IsGoingToCollideSoon(MineMobilityModel* other);
+  bool IsGoingToCollideSoon (MineMobilityModel* other);
   /**
    * Returns true if there is a mobile with higher priority than this mobile
    * waiting for this mobile's next connection to clear.
    */
-  bool IsHigherPriorityWaiting();
+  bool IsHigherPriorityWaiting ();
 
   /**
    * \brief Converts time relative to simulation start into time relative to
    * current simulation time (the form that Simulator::Schedule expects).
    * \param t The time relative to simulation start
    */
-  Time time2timeleft(Time t);
+  Time time2timeleft (Time t);
   /**
    * \brief std::vector containing ns3::Vector objects that describe that
    * path that will be followed
