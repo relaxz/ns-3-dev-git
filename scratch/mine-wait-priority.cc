@@ -28,7 +28,7 @@ int
 main (int argc, char *argv[])
 {
   NodeContainer mobileWifiNodes;
-  mobileWifiNodes.Create (2); //nr of nodes
+  mobileWifiNodes.Create (3); //nr of nodes
   MineMobilityPaths pts;
 
 /*
@@ -40,17 +40,24 @@ main (int argc, char *argv[])
 */
 
   //node 0
-  Ptr<MineMobilityModel> minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(10), "Priority", IntegerValue(0));
+  Ptr<MineMobilityModel> minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(10), "Priority", IntegerValue(5));
   minemob->SetPath(pts.pathFH); //set path
   Ptr<MobilityModel> model = minemob->GetObject<MobilityModel>();
   Ptr<Object> object = mobileWifiNodes.Get(0);
   object->AggregateObject(minemob);
 
   //node 1
-  minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(5), "Priority", IntegerValue(1));
+  minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(5), "Priority", IntegerValue(10));
   minemob->SetPath(pts.pathHF);
   model = minemob->GetObject<MobilityModel>();
   object = mobileWifiNodes.Get(1);
+  object->AggregateObject(minemob);
+
+  //node 2
+  minemob = CreateObjectWithAttributes<MineMobilityModel>("Speed", DoubleValue(4.6), "Priority", IntegerValue(0));
+  minemob->SetPath(pts.pathHF);
+  model = minemob->GetObject<MobilityModel>();
+  object = mobileWifiNodes.Get(2);
   object->AggregateObject(minemob);
 
   AnimationInterface anim ("mine_test.xml"); //change this!
