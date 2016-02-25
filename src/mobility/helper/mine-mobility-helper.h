@@ -36,8 +36,8 @@ public:
 
   /*
    * enum which declares different vehicle types, used for install.
-   * Default values: (speed=m/s)
-   * DUMPER[Speed = 3; Priority = 1], LOADER[Speed = 7; Priority = 2], CAR[Speed = 15; Priority = 3]
+   * Default values: (speed=m/s). High nr = high priority
+   * DUMPER[Speed = 3; Priority = 9], LOADER[Speed = 7; Priority = 8], CAR[Speed = 15; Priority = 7]
    */
   enum vehicle_type {DUMPER, LOADER, CAR};
 

@@ -25,6 +25,7 @@ def build(bld):
         'helper/mobility-helper.cc',
         'helper/ns2-mobility-helper.cc',
         'helper/mine-mobility-paths.cc',
+        'helper/mine-mobility-helper.cc',
         ]
 
     mobility_test = bld.create_ns3_module_test_library('mobility')
@@ -63,6 +64,7 @@ def build(bld):
         'helper/mobility-helper.h',
         'helper/ns2-mobility-helper.h',
         'helper/mine-mobility-paths.h',
+        'helper/mine-mobility-helper.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
