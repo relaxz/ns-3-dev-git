@@ -43,7 +43,8 @@ Connection::GetTarget (void)
 }
 
 std::vector<MineMobilityModel*>
-Connection::GetMobiles (){
+Connection::GetMobiles ()
+{
   return m_mobiles;
 }
 
@@ -99,7 +100,6 @@ RendezvousPoint::GetConnectionTo (RendezvousPoint* rp)
   NS_LOG_UNCOND ("requested rp: (" << rpp.x << "," << rpp.y << "," << rpp.z << ")"
 		 "\nfound rp:     (" << c0p.x << "," << c0p.y << "," << c0p.z << ")\n");
   NS_FATAL_ERROR ("Connection not found.");
-  //return NULL;
 }
 
 Connection&

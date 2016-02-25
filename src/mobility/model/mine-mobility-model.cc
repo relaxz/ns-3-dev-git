@@ -15,6 +15,7 @@ NS_LOG_COMPONENT_DEFINE ("MineMobilityModel");
 
 NS_OBJECT_ENSURE_REGISTERED (MineMobilityModel);
 
+//todo replace UNCOND logging with other log levels
 TypeId
 MineMobilityModel::GetTypeId (void)
 {
@@ -37,10 +38,8 @@ MineMobilityModel::GetTypeId (void)
 
 void MineMobilityModel::SetPath (std::vector<RendezvousPoint*> &path)
 {
-  //m_first = true;
   m_next_rendezvous_point = 0;
   m_path = path;
-  //AddWaypoint (Waypoint(Simulator::Now (), m_path[m_next_rendezvous_point]->GetPosition ()));
   SetPosition (m_path[m_next_rendezvous_point]->GetPosition ());
   Rendezvous ();
 }
@@ -67,7 +66,11 @@ MineMobilityModel::Rendezvous (){
     {
       NS_LOG_UNCOND(this << ": Stop and wait, path to next rp is in use");
       std::vector<MineMobilityModel*> others = rp_current->GetApproachingMobilesFrom (rp_target);
-      NS_ASSERT (!IsPriorityHigherThan (others));
+      //NS_ASSERT (!IsPriorityHigherThan (others));
+      if (IsPriorityHigherThan(others))
+	{
+	  NS_LOG_UNCOND("High priority mobile is forced to wait for low priority mobile!");
+	}
       Time timeleft = rp_current->GetTimeLeftUntilClear (rp_target);
       // list us as waiting
       rp_current->AddWaitingMobile (this, timeleft + Simulator::Now ());
@@ -133,7 +136,6 @@ MineMobilityModel::DoGetPosition (void) const
 void
 MineMobilityModel::DoSetPosition (const Vector &position)
 {
-  //m_waypointMobility->SetPosition(position);
   AddWaypoint (Waypoint (Simulator::Now (), position));
 }
 Vector
@@ -147,15 +149,12 @@ MineMobilityModel::CalculateWaypoint (Vector destination)
 {
   Time arrival_time;
   arrival_time = TravelTime (m_last_waypoint.position, destination) + m_last_waypoint.time;
-  //NS_LOG_UNCOND ("Travel time: " << (arrival_time - m_last_waypoint.time).GetSeconds ());
   return Waypoint (arrival_time, destination);
 }
 
 Time
 MineMobilityModel::TravelTime(Vector v1, Vector v2)
 {
-  //NS_LOG_UNCOND ("TravelTime: v1=(" << v1.x << ", " << v1.y << ", " << v1.z << ")");
-  //NS_LOG_UNCOND ("TravelTime: v2=(" << v2.x << ", " << v2.y << ", " << v2.z << ")");
   return Seconds (CalculateDistance (v1, v2) / m_speed);
 }
 
@@ -217,15 +216,11 @@ MineMobilityModel::IsNextConnectionClearUntilPassed (){
 
 bool
 MineMobilityModel::IsPriorityLowerThan (MineMobilityModel* other){
-  //UintegerValue other_priority;
-  //other->GetAttribute("Priority", other_priority);
   return m_priority < other->m_priority;
 }
 
 bool
 MineMobilityModel::IsPriorityHigherThan (MineMobilityModel* other){
-  //UintegerValue other_priority;
-  //other->GetAttribute("Priority", other_priority);
   return m_priority > other->m_priority;
 }
 

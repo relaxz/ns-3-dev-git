@@ -144,10 +144,6 @@ private:
   double m_speed;
   Ptr<WaypointMobilityModel> m_waypointMobility;
   uint32_t m_priority;
-  /*
-   * \brief True if no waypoints have been added yet
-   */
-  bool m_first;
 };
 } // namespace ns3
 
