@@ -44,6 +44,12 @@ public:
   void Rendezvous ();
   MineMobilityModel ();
   virtual ~MineMobilityModel ();
+  /**
+   *  TracedCallback signature.
+   *
+   * \param [in] model Value of the MineMobilityModel.
+   */
+  typedef void (* TracedCallback)(Ptr<const MineMobilityModel> model);
 private:
   virtual void DoDispose (void);
   /**
@@ -144,6 +150,15 @@ private:
   double m_speed;
   Ptr<WaypointMobilityModel> m_waypointMobility;
   uint32_t m_priority;
+  /**
+   * False if we are already at the RendezvousPoint we are scheduled to reach.
+   * This will happen when we stop to wait for a busy connection.
+   */
+  bool m_new_rp;
+  /**
+   * Used to alert subscribers that a rendezvous point was reached.
+   */
+  ns3::TracedCallback<Ptr<const MineMobilityModel> > m_rendezvousTrace;
 };
 } // namespace ns3
 

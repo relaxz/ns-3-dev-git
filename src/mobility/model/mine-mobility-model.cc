@@ -32,15 +32,21 @@ MineMobilityModel::GetTypeId (void)
 		   IntegerValue (0),
 		   MakeIntegerAccessor (&MineMobilityModel::m_priority),
 		   MakeIntegerChecker<uint32_t> ())
+    .AddTraceSource ("Rendezvous",
+		     "A rendezvous point was reached.",
+		     MakeTraceSourceAccessor (&MineMobilityModel::m_rendezvousTrace),
+		     "ns3::MineMobilityModel::TracedCallback")
   ;
   return tid;
 }
 
 void MineMobilityModel::SetPath (std::vector<RendezvousPoint*> &path)
 {
+  NS_LOG_UNCOND ("SetPath called");
   m_next_rendezvous_point = 0;
   m_path = path;
   SetPosition (m_path[m_next_rendezvous_point]->GetPosition ());
+  m_new_rp = true;
   Rendezvous ();
 }
 
@@ -54,6 +60,13 @@ MineMobilityModel::Rendezvous (){
 
   RendezvousPoint* rp_current = m_path[m_next_rendezvous_point];
   RendezvousPoint* rp_target = m_path[m_next_rendezvous_point + 1];
+
+  if (m_new_rp)
+    {
+      // notify listeners
+      m_rendezvousTrace (this);
+      m_new_rp = false;
+    }
   // Decide if we need to wait at this rp
   // If we are out of places to go, just stop
   if (m_next_rendezvous_point >= m_path.size () - 1)
@@ -193,6 +206,7 @@ MineMobilityModel::MoveNextRP (){
   Simulator::Schedule (timeleft, &MineMobilityModel::Rendezvous, this);
   //list this mobile as traveling along the path
   m_path[m_next_rendezvous_point - 1]->GetConnectionTo (m_path[m_next_rendezvous_point]).AddMobile (this, m_last_waypoint.time);
+  m_new_rp = true;
 }
 
 bool
