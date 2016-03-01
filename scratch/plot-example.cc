@@ -61,10 +61,10 @@ main (int argc, char *argv[])
       mob->AggregateObject(speedProbe);
   }
 
-//  "NodeList/*/$ns3::MineMobilityModel/Rendezvous"
-//  $ns3::MineMobilityModel/
+// just for testing
   Config::ConnectWithoutContext ("/NodeList/*/$ns3::SpeedProbe/OutputSpeed",
 				MakeCallback (&OutputSpeed));
+
   // Use GnuplotHelper to plot the speed over time
   GnuplotHelper plotHelper;
 
