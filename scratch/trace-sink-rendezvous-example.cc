@@ -48,11 +48,15 @@ main (int argc, char *argv[])
 
 
   //-------------------------------------------
-  Ptr<MineMobilityModel> mob;
-  for (uint32_t i = 0; i < node_count; i++){
-      mob = mobileWifiNodes.Get (i)->GetObject<MineMobilityModel> ();
-      mob->TraceConnectWithoutContext ("Rendezvous", MakeCallback (&Rendezvous));
-  }
+//  Ptr<MineMobilityModel> mob;
+//  for (uint32_t i = 0; i < node_count; i++){
+//      mob = mobileWifiNodes.Get (i)->GetObject<MineMobilityModel> ();
+//      mob->TraceConnectWithoutContext ("Rendezvous", MakeCallback (&Rendezvous));
+//  }
+
+  // this way is easier, and it seems to deal with situations where not all nodes have MineMobilityModels
+  Config::ConnectWithoutContext ("/NodeList/*/$ns3::MineMobilityModel/Rendezvous",
+				 MakeCallback (&Rendezvous));
   //-------------------------------------------
 
   Simulator::Run ();
