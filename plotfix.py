@@ -1,30 +1,39 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
-import sys
+import sys, argparse
 #print(sys.version_info)
 
 suffix = '.fix'
 
-if len(sys.argv) < 2:
-    sys.exit("Please provide the name of a data file")
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('file', nargs='+', type=argparse.FileType('r'),
+                        help='data file to process')
+    args = parser.parse_args()
+    for file in args.file:
+        process(file)
+        print('All tasks done')
 
-for filename in sys.argv[1:]:
-    print('Processing ', filename, '->', filename + suffix, '... ', end='')
+def process(file):
+    print('Processing ', file.name, '->', file.name + suffix, '... ', end='')
     first = True
-    with open(filename) as f_in:
-        with open(filename + suffix, 'w') as f_out:
-            for line in f_in.readlines():
-                split = line.split()
-                if len(split) == 2:
-                    [new1, new2] = split
-                    if first:
-                        old1, old2 = 0, new2
-                        first = False
-                    f_out.write(str(new1) + '\t' + str(old2) + '\n')
-                    f_out.write(str(new1) + '\t' + str(new2) + '\n')
-                    old1, old2 = new1, new2
+    with open(file.name + suffix, 'w') as f_out:
+        for line in file:
+            split = line.split()
+            if len(split) == 2:
+                [new1, new2] = split
+                if first:
+                    old1, old2 = 0, new2
+                    f_out.write(str(0) + '\t' + str(new2) + '\n')
+                    first = False
                 else:
-                    f_out.write('\n')
-                    first = True
+                    f_out.write(str(new1) + '\t' + str(old2) + '\n')
+                f_out.write(str(new1) + '\t' + str(new2) + '\n')
+                old1, old2 = new1, new2
+            else:
+                f_out.write('\n')
+                first = True
     print('Done')
-print('All tasks done')
+
+if __name__ == '__main__':
+    main()
