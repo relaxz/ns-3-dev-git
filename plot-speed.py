@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-
 import sys, os, argparse
-#print(sys.version_info)
+print(sys.version_info) # known to work on python 3.5
 
 def main():
     parser = argparse.ArgumentParser()
@@ -21,10 +20,16 @@ def process(file, script):
     first = True
     with open(file.name + suffix, 'w') as f_out:
         for line in file:
+            # Because the speed is constant and gnuplot likes to draw straight
+            # lines between the data points, we need to tell gnuplot to hold
+            # each speed value and then instantly change speed.
             split = line.split()
             if len(split) == 2:
                 [new1, new2] = split
                 if first:
+                    # Fix for missing data at simulation start.
+                    # This happens because we can't hook our probes to the
+                    # mobility models until we have created them.
                     old1, old2 = 0, new2
                     f_out.write(str(0) + '\t' + str(new2) + '\n')
                     first = False
@@ -44,10 +49,9 @@ def process(file, script):
     print('Renaming', file.name + suffix, '->', file.name, '... ', end='')
     os.rename(file.name + suffix, file.name)
     print('Done')
-    if script != None:
-        print('Running gnuplot', script, '... ', end='')
-        os.system('gnuplot ' + script)
-        print('Done')
+    print('Running gnuplot', script, '... ', end='')
+    os.system('gnuplot ' + script)
+    print('Done')
 
 if __name__ == '__main__':
     main()
