@@ -31,10 +31,8 @@ def process(file, script):
                     # This happens because we can't hook our probes to the
                     # mobility models until we have created them.
                     old1, old2 = 0, new2
-                    f_out.write(str(0) + '\t' + str(new2) + '\n')
                     first = False
-                else:
-                    f_out.write(str(new1) + '\t' + str(old2) + '\n')
+                f_out.write(str(new1) + '\t' + str(old2) + '\n')
                 f_out.write(str(new1) + '\t' + str(new2) + '\n')
                 old1, old2 = new1, new2
             else:
