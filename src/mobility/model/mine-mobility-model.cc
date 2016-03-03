@@ -156,9 +156,76 @@ MineMobilityModel::DoGetVelocity (void) const
 {
   return m_waypointMobility->GetVelocity ();
 }
+//inte klart än!
+uint32_t
+MineMobilityModel::DistancePointToPoint(Vector A, Vector B, std::vector<Vector> Path_A, std::vector<Vector> Path_B, Vector ref_point){
+	uint32_t distance=0;
+	if(CheckIfOnTheSameRoadSection(ref_point, A, B, Path_A, Path_B)){
+		distance = CalculateDistance(A, B);
+		return distance;
+	}
+	else{
+		distance = GetDistanceRefToPoint(ref_point, A, Path_A) + GetDistanceRefToPoint(ref_point, B, Path_B);
+		return distance;
+	}
+}
+uint32_t
+MineMobilityModel::GetDistanceRefToPoint(Vector ref_point, Vector x, std::vector<Vector> fullpath){
+	uint32_t dist_to_point = 0;
+	dist_to_point = CalculateDistance(ref_point,x);
+	for(int i = 0; i < fullpath.size(); i++){
+		if(ref_point == fullpath[i]){
+			return dist_to_point;
+		}
+		else{
+			dist_to_point += CalculateDistance(fullpath[i],fullpath[i]);
+		}
+	}
+	return dist_to_point;
+}
+bool
+MineMobilityModel::CheckIfOnTheSameRoadSection(Vector ref_point, Vector A, Vector B,std::vector<Vector> Path_A, std::vector<Vector> Path_B){
+	std::vector<Vector> overlapping_path = NULL;
+	overlapping_path = GetOverlappingPaths(Path_A,Path_B);
+	bool overlap1 = false;
+	bool overlap2 = false;
+	if(overlapping_path != NULL){
+		for(int i = 0; i < overlapping_path.size(); i++){
+			if(CalculateDistance(A,overlapping_path[i]) < CalculateDistance(overlapping_path[i],overlapping_path[i+1]))
+			{
+				overlap1=true;
+			}
+			if(CalculateDistance(B,overlapping_path[i]) < CalculateDistance(overlapping_path[i],overlapping_path[i+1]))
+			{
+				overlap2=true;
+			}
+		}
+		if(overlap1 && overlap2){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	else{
+		return false;
+	}
+}
+std::vector<Vector>
+MineMobilityModel::GetOverlappingPaths(std::vector<Vector> Path_A, std::vector<Vector> Path_B){
+	std::vector<Vector> overlapping_path = NULL;
+	for(int i = 0; i < Path_A.size(); i++){
+		for(int j = 0; j < Path_B.size(); j++){
+			if(Path_A[i] == Path_B[j]){
+				overlapping_path.push_back(Path_A[i]);
+			}
+		}
+	}
+	return overlapping_path;
+}
 
 Waypoint
-MineMobilityModel::CalculateWaypoint (Vector destination)
+MineMobilityModel::CalculateWaypoint(Vector destination)
 {
   Time arrival_time;
   arrival_time = TravelTime (m_last_waypoint.position, destination) + m_last_waypoint.time;

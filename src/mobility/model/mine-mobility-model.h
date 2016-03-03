@@ -67,14 +67,31 @@ private:
    * \return The velocity vector of a node.
    */
   virtual Vector DoGetVelocity (void) const;
-
   /*
+   * returns the distance between two vectors.
+   * ref_point is the point where the roads intersect.
+   * e.g. center of the cross-roads.
+   */
+  uint32_t DistancePointToPoint(Vector A, Vector B, std::vector<Vector> path_A, std::vector<Vector> path_B, Vector ref_point);
+  /*
+   * returns the distance between a vector and the reference point.
+   */
+  uint32_t GetDistanceRefToPoint(Vector ref_point, Vector x,std::vector<Vector> path);
+  /*
+   * checks if the two vectors are on the same road section for calculating purposes.
+   */
+  bool CheckIfOnTheSameRoadSection(Vector ref_point, Vector x1, Vector x2, std::vector<Vector> A, std::vector<Vector> B);
+  /*
+   * (should)return(s) an array with the overlapping points.
+   */
+  std::vector<Vector>
+  GetOverlappingPaths(std::vector<Vector> Path_A, std::vector<Vector> Path_B);
+  /*b
    * \brief Returns the Waypoint with a correct time so that the object will
    * travel at the set m_speed
    * \param destination The position vector of the new waypoint
    */
   Waypoint CalculateWaypoint (Vector destination);
-
   /*
    * Returns the time to travel between two points
    */
