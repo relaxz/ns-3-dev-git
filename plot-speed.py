@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys, os, argparse
-print(sys.version_info) # known to work on python 3.5
+#print(sys.version_info) # known to work on python 3.5
 
 def main():
     parser = argparse.ArgumentParser()
@@ -27,7 +27,7 @@ def process(file, script):
             if len(split) == 2:
                 [new1, new2] = split
                 if first:
-                    # Fix for missing data at simulation start.
+                    # Data is missing at simulation start.
                     # This happens because we can't hook our probes to the
                     # mobility models until we have created them.
                     old1, old2 = 0, new2

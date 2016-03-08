@@ -16,20 +16,11 @@
 
 #include "ns3/core-module.h"
 #include "ns3/stats-module.h"
-#include "ns3/vector.h"
 #include "ns3/netanim-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/string.h"
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("trace-rendezvous");
-
-void
-//OutputSpeed (Ptr <const MineMobilityModel> mob)
-OutputSpeed (double oldValue, double newValue)
-{
-  NS_LOG_UNCOND ("speedprobe " << oldValue << ", "<< newValue << " =======================================");
-}
+NS_LOG_COMPONENT_DEFINE ("plot-example");
 
 int 
 main (int argc, char *argv[])
@@ -45,10 +36,10 @@ main (int argc, char *argv[])
 
   pts.DisplayMinePaths ();
 
-  AnimationInterface anim ("trace-rendezvous.xml"); //change this!
+  AnimationInterface anim ("plot-example.xml");
 
-
-  //-------------------------------------------
+  // Add SpeedProbes to all nodes that we installed MineMobilityModel on.
+  // Used later for plotting speed.
   Ptr<MobilityModel> mob;
   for (uint32_t i = 0; i < node_count; i++){
       mob = mobileWifiNodes.Get (i)->GetObject<MobilityModel> ();
@@ -60,10 +51,6 @@ main (int argc, char *argv[])
 	}
       mob->AggregateObject(speedProbe);
   }
-
-// just for testing
-  Config::ConnectWithoutContext ("/NodeList/*/$ns3::SpeedProbe/OutputSpeed",
-				MakeCallback (&OutputSpeed));
 
   // Use GnuplotHelper to plot the speed over time
   GnuplotHelper plotHelper;
@@ -90,7 +77,6 @@ main (int argc, char *argv[])
                         "Output",
                         "Speed",
                         GnuplotAggregator::KEY_BELOW);
-  //-------------------------------------------
 
   Simulator::Run ();
   Simulator::Destroy ();
