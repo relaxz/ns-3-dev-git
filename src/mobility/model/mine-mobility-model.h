@@ -51,6 +51,10 @@ public:
    */
   typedef void (* TracedCallback)(Ptr<const MineMobilityModel> model);
 private:
+  /**
+   * Implementation of SetPath
+   */
+  void DoSetPath (std::vector<RendezvousPoint*> &path);
   virtual void DoDispose (void);
   /**
    * \brief Get current position.

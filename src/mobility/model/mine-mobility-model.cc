@@ -40,14 +40,22 @@ MineMobilityModel::GetTypeId (void)
   return tid;
 }
 
-void MineMobilityModel::SetPath (std::vector<RendezvousPoint*> &path)
+void
+MineMobilityModel::SetPath (std::vector<RendezvousPoint*> &path)
 {
-  NS_LOG_UNCOND ("SetPath called");
+  // Schedule it instead of calling it to prevent CourseChanges before
+  // the simulation starts
+  Simulator::Schedule (Time(0), &MineMobilityModel::DoSetPath, this, path);
+}
+
+void
+MineMobilityModel::DoSetPath (std::vector<RendezvousPoint*> &path)
+{
   m_next_rendezvous_point = 0;
   m_path = path;
   SetPosition (m_path[m_next_rendezvous_point]->GetPosition ());
   m_new_rp = true;
-  Rendezvous ();
+  Simulator::Schedule (Time(0), &MineMobilityModel::Rendezvous, this);
 }
 
 void
