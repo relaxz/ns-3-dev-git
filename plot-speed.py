@@ -27,9 +27,6 @@ def process(file, script):
             if len(split) == 2:
                 [new1, new2] = split
                 if first:
-                    # Data is missing at simulation start.
-                    # This happens because we can't hook our probes to the
-                    # mobility models until we have created them.
                     old1, old2 = 0, new2
                     first = False
                 f_out.write(str(new1) + '\t' + str(old2) + '\n')
